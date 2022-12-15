@@ -15,12 +15,25 @@ func _input(event):
 			Global.flag.click = !Global.flag.click
 		else:
 			Global.flag.click = !Global.flag.click
+	if event is InputEventKey:
+		if event.pressed and event.scancode == KEY_D:
+			var team = "champion"
+			var step = Vector2(5,0)
+			Global.obj.ballroom.shift_troupe(team,step)
+		if event.pressed and event.scancode == KEY_A:
+			var team = "champion"
+			var step = Vector2(-5,0)
+			Global.obj.ballroom.shift_troupe(team,step)
 
 func _process(delta):
 	pass
 
 func _on_Timer_timeout():
-	Global.node.TimeBar.value +=1
+	Global.node.TimeBar.value += 1
 	
 	if Global.node.TimeBar.value >= Global.node.TimeBar.max_value:
 		Global.node.TimeBar.value -= Global.node.TimeBar.max_value
+		
+		if Global.obj.keys().has("ballroom"):
+			for pas in Global.obj.ballroom.arr.pas:
+				pas.obj.challenge.tick()

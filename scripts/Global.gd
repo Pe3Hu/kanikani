@@ -31,6 +31,10 @@ func init_num():
 	
 	num.layer = {}
 	num.layer.square = arr.n[2]
+	
+	dict.r = {
+		"circle": [num.ballroom.a]
+	}
 
 func init_primary_key():
 	num.primary_key = {}
@@ -49,6 +53,12 @@ func init_dict():
 		"W":  Vector2( 1, 0),
 		"NW": Vector2( 1, 1)
 	}
+	
+	dict.opponent = {
+		"mob": "champion",
+		"champion": "mob"
+	}
+	
 
 func init_window_size():
 	dict.window_size = {}
@@ -84,6 +94,7 @@ func init_arr():
 	]
 	
 	arr.n = [1,2,3,4,12]
+	arr.pas = ["Classic pas 0"]
 
 func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 

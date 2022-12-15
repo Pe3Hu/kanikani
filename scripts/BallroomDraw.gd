@@ -16,6 +16,12 @@ func _draw():
 			for dot in dots:
 				draw_circle(dot.vec.position, dot.num.a, dot.color.background)
 		
+		for pas in Global.obj.ballroom.arr.pas:
+			for zone in pas.arr.zone:
+				match zone.word.type:
+					"circle":
+						draw_circle(zone.arr.vertex.front(), zone.num.r, zone.color.background)
+		
 		for team in Global.obj.ballroom.dict.troupe.keys():
 			var troupe = Global.obj.ballroom.dict.troupe[team]
 			
