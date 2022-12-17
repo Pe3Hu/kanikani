@@ -6,7 +6,7 @@ func _draw():
 		for squares in Global.obj.ballroom.dict.square[Global.num.layer.square]:
 			for square in squares:
 				draw_polygon(square.arr.vertex, PoolColorArray([square.color.background]))
-				draw_circle(square.vec.center, square.arr.dot.front().num.a, Color.blue)
+				draw_circle(square.vec.center, Global.dict.a[Global.num.layer.square], Color.blue)
 #
 #		for _i in Global.obj.ballroom.dict.dot[Global.num.layer.square].size():
 #			var _j = (_i+1)%Global.obj.ballroom.dict.dot[Global.num.layer.square].size()
@@ -14,10 +14,10 @@ func _draw():
 		
 		for dots in Global.obj.ballroom.dict.dot[Global.num.layer.square]:
 			for dot in dots:
-				draw_circle(dot.vec.position, dot.num.a, dot.color.background)
+				draw_circle(dot.vec.position, Global.dict.a[Global.num.layer.square], dot.color.background)
 		
-		for pas in Global.obj.ballroom.arr.pas:
-			for zone in pas.arr.zone:
+		for exam in Global.obj.ballroom.arr.exam:
+			for zone in exam.arr.zone:
 				match zone.word.type:
 					"circle":
 						draw_circle(zone.arr.vertex.front(), zone.num.r, zone.color.background)
@@ -30,7 +30,6 @@ func _draw():
 #		for cells in Global.obj.ballroom.arr.cell:
 #			for cell in cells:
 #				draw_polygon(cell.arr.point, PoolColorArray([cell.color.background]))
-		pass
 
 func _process(delta):
 	update()

@@ -4,14 +4,13 @@ extends Node
 func _ready():
 #	datas.sort_custom(Sorter, "sort_ascending")
 	Global.obj.ballroom = Classes_0.Ballroom.new()
-	pass
 
 func _input(event):
 	if event is InputEventMouseButton:
 		if Global.flag.click:
 			if Global.obj.keys().has("ballroom"):
 				Global.next_square_layer()
-				pass
+				
 			Global.flag.click = !Global.flag.click
 		else:
 			Global.flag.click = !Global.flag.click
@@ -35,5 +34,5 @@ func _on_Timer_timeout():
 		Global.node.TimeBar.value -= Global.node.TimeBar.max_value
 		
 		if Global.obj.keys().has("ballroom"):
-			for pas in Global.obj.ballroom.arr.pas:
-				pas.obj.challenge.tick()
+			for exam in Global.obj.ballroom.arr.exam:
+				exam.obj.challenge.tick()

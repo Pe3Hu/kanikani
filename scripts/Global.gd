@@ -35,6 +35,11 @@ func init_num():
 	dict.r = {
 		"circle": [num.ballroom.a]
 	}
+	
+	dict.a = {}
+	
+	for n in Global.arr.n:
+		dict.a[n] = num.ballroom.a/n/2
 
 func init_primary_key():
 	num.primary_key = {}
@@ -94,7 +99,7 @@ func init_arr():
 	]
 	
 	arr.n = [1,2,3,4,12]
-	arr.pas = ["Classic pas 0"]
+	arr.exam = ["Classic exam 0"]
 
 func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 
