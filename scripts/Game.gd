@@ -4,6 +4,7 @@ extends Node
 func _ready():
 #	datas.sort_custom(Sorter, "sort_ascending")
 	Global.obj.ballroom = Classes_0.Ballroom.new()
+	Global.obj.easel = Classes_2.Easel.new()
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -23,6 +24,8 @@ func _input(event):
 			var team = "champion"
 			var step = Vector2(-5,0)
 			Global.obj.ballroom.shift_troupe(team,step)
+		if event.pressed and event.scancode == KEY_S:
+			Global.obj.ballroom.find_nearest_dot(get_viewport().get_mouse_position())
 
 func _process(delta):
 	pass

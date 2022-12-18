@@ -2,21 +2,35 @@ extends Node
 
 
 class Dot:
+	var word = {}
 	var num = {}
 	var vec = {}
 	var arr = {}
 	var obj = {}
+	var dict = {}
 	var color = {}
 
 	func _init(input_):
+		num.index = Global.num.primary_key.dot
+		Global.num.primary_key.dot += 1
 		num.l = input_.l
 		arr.n = input_.ns
+		arr.layer = []
 		arr.a = [Global.num.dot.a/arr.n.front()]
 		vec.grid = input_.grid
 		vec.position = input_.position
 		obj.ballroom = input_.ballroom
 		obj.ballroom.dict.position[vec.position] = self
 		color.background = Color.yellow
+		dict.windrose = {}
+		dict.neighbor = {}
+		
+		for n in Global.arr.n:
+			dict.neighbor[n] = {}
+
+	func add_neighbor(layer_, windrose_, dot_):
+		dict.neighbor[layer_][windrose_] = dot_
+		dot_.dict.neighbor[layer_][Global.dict.reflected_windrose[windrose_]] = self
 
 class Square:
 	var vec = {}
@@ -165,7 +179,7 @@ class Exam:
 		arr.examinee = []
 		
 		match word.name:
-			"Classic exam 0":
+			"classic exam 0":
 				arr.examinee.append_array(dancers)
 
 	func set_challenge():
@@ -173,7 +187,7 @@ class Exam:
 		input.exam = self
 		
 		match word.name:
-			"Classic exam 0":
+			"classic exam 0":
 				input.delay = 1
 				input.type = "outside"
 		
@@ -186,7 +200,7 @@ class Exam:
 		input.exam = self
 		
 		match word.name:
-			"Classic exam 0":
+			"classic exam 0":
 				input.type = "circle"
 				input.target = "first"
 				input.r = Global.dict.r[input.type][0]
@@ -199,7 +213,7 @@ class Exam:
 		input.exam = self
 		
 		match word.name:
-			"Classic exam 0":
+			"classic exam 0":
 				input.effect = "instantaneous"
 				input.type = "percent"
 				input.value = 100
@@ -220,7 +234,7 @@ class Dancer:
 		num.hp.max = input_.hp
 		num.hp.current = num.hp.max
 		num.a = Global.num.dancer.a
-		vec.position = Vector2(Global.vec.ballroom.x,Global.vec.ballroom.y)
+		vec.position = Vector2(Global.vec.ballroom.offset.x,Global.vec.ballroom.offset.y)
 		obj.troupe = input_.troupe
 		
 		set_color()

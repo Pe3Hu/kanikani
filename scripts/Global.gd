@@ -15,7 +15,7 @@ func init_num():
 	init_primary_key()
 	
 	num.ballroom = {}
-	num.ballroom.n = 10
+	num.ballroom.n = 12
 	num.ballroom.cols = num.ballroom.n
 	num.ballroom.rows = num.ballroom.n
 	num.ballroom.half = min(num.ballroom.cols,num.ballroom.rows)/2
@@ -32,6 +32,13 @@ func init_num():
 	num.layer = {}
 	num.layer.square = arr.n[2]
 	
+	num.easel = {}
+	num.easel.offset = num.ballroom.a/2
+	
+	num.pas = {}
+	num.pas.offset = num.ballroom.a/4
+	num.pas.label = num.ballroom.a/2*0.9
+	
 	dict.r = {
 		"circle": [num.ballroom.a]
 	}
@@ -43,7 +50,7 @@ func init_num():
 
 func init_primary_key():
 	num.primary_key = {}
-	num.primary_key.null = 0
+	num.primary_key.dot = 0
 
 func init_dict():
 	init_window_size()
@@ -58,6 +65,13 @@ func init_dict():
 		"W":  Vector2( 1, 0),
 		"NW": Vector2( 1, 1)
 	}
+	
+	dict.reflected_windrose = {}
+	var n = dict.windrose.keys().size()
+	
+	for _i in n:
+		var _j = (_i+n/2)%n
+		dict.reflected_windrose[dict.windrose.keys()[_i]] = dict.windrose.keys()[_j]
 	
 	dict.opponent = {
 		"mob": "champion",
@@ -99,7 +113,9 @@ func init_arr():
 	]
 	
 	arr.n = [1,2,3,4,12]
-	arr.exam = ["Classic exam 0"]
+	arr.exam = ["classic exam 0"]
+	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
+	arr.pas = ["left rotate","right rotate","move forward"]
 
 func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 
@@ -110,7 +126,16 @@ func init_flag():
 	flag.stop = false
 
 func init_vec():
-	vec.ballroom = dict.window_size.center-Vector2(num.ballroom.cols,num.ballroom.rows)*num.ballroom.a/2
+	vec.ballroom = {}
+	vec.ballroom.offset = dict.window_size.center-Vector2(num.ballroom.cols,num.ballroom.rows)*num.ballroom.a/2
+	
+	vec.easel = {}
+	vec.easel.offset = vec.ballroom.offset+Vector2(num.ballroom.cols,0)*num.ballroom.a
+	vec.easel.offset.x += num.easel.offset
+	
+	vec.pas = {}
+	vec.pas.size = Vector2(num.ballroom.a*3,num.ballroom.a)
+	vec.pas.offset = Vector2(0,num.pas.offset+vec.pas.size.y/2)
 
 func init_color():
 	color.essence = {
@@ -131,6 +156,16 @@ func init_color():
 		"Center": Color.from_hsv(120.0/360.0,1,0.6)
 	}
 
+func init_font():
+	var names = ["ALBA____","ELEPHNT","Marlboro","Sabandija"]
+	dict.font = {}
+	
+	for name in names:
+		dict.font[name] = DynamicFont.new()
+		var path = "res://assets/"+name+".TTF"
+		dict.font[name].font_data = load(path)
+		dict.font[name].size = num.pas.label
+
 func _ready():
 	init_dict()
 	init_arr()
@@ -139,6 +174,7 @@ func _ready():
 	init_flag()
 	init_vec()
 	init_color()
+	init_font()
 
 func next_square_layer():
 	var index = (arr.n.find(num.layer.square)+1)%arr.n.size()

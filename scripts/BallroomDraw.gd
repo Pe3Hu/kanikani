@@ -7,6 +7,8 @@ func _draw():
 			for square in squares:
 				draw_polygon(square.arr.vertex, PoolColorArray([square.color.background]))
 				draw_circle(square.vec.center, Global.dict.a[Global.num.layer.square], Color.blue)
+#		for key in Global.obj.ballroom.dict.position.keys():
+#				draw_circle(key, 10, Color.black)
 #
 #		for _i in Global.obj.ballroom.dict.dot[Global.num.layer.square].size():
 #			var _j = (_i+1)%Global.obj.ballroom.dict.dot[Global.num.layer.square].size()
@@ -27,9 +29,14 @@ func _draw():
 			
 			for dancer in troupe.arr.dancer:
 				draw_circle(dancer.vec.position, dancer.num.a, dancer.color.background)
-#		for cells in Global.obj.ballroom.arr.cell:
-#			for cell in cells:
-#				draw_polygon(cell.arr.point, PoolColorArray([cell.color.background]))
+		
+		for position in Global.obj.ballroom.dict.position.keys():
+			var dot = Global.obj.ballroom.dict.position[position]
+			
+			if dot == Global.obj.ballroom.obj.current.dot:
+				for windrose in dot.dict.neighbor[Global.num.layer.square].keys():
+					var neighbor = dot.dict.neighbor[Global.num.layer.square][windrose]
+					draw_circle(neighbor.vec.position, Global.dict.a[Global.num.layer.square], Color.white)
 
 func _process(delta):
 	update()

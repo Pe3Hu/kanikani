@@ -7,6 +7,7 @@ class Ballroom:
 	var vec = {}
 	var flag = {}
 	var dict = {}
+	var obj = {}
 	var color = {}
 
 	func _init():
@@ -15,6 +16,8 @@ class Ballroom:
 		init_squares()
 		init_rombs()
 		init_troupes()
+		obj.current = {}
+		obj.current.dot = null
 		color.background = Color.gray
 
 	func init_dots():
@@ -32,7 +35,7 @@ class Ballroom:
 					var input = {}
 					input.grid = Vector2(_j,_i)
 					input.l = l
-					input.position = input.grid*input.l+Global.vec.ballroom
+					input.position = input.grid*input.l+Global.vec.ballroom.offset
 					
 					if !dict.position.keys().has(input.position):
 						input.ballroom = self
@@ -42,8 +45,6 @@ class Ballroom:
 					else:
 						dict.dot[n][_i].append(dict.position[input.position])
 						dict.position[input.position].arr.n.append(n)
-			
-			print(dict.position.keys().size())
 
 	func init_squares():
 		dict.square = {}
@@ -75,6 +76,34 @@ class Ballroom:
 				
 				if dict.square[n][_i].size() == 0:
 					dict.square[n].remove(_i)
+		
+		set_dot_neighbors()
+
+	func set_dot_neighbors():
+		for position in dict.position.keys():
+			var dot = dict.position[position]
+			
+			for n in dot.arr.n:
+				var layer = n
+				
+				if n < 0:
+					layer = abs(n)-1
+					
+				dot.arr.layer.append(layer)
+			
+			for windrose in Global.dict.windrose.keys():
+				for layer in dot.arr.layer:
+					var l = Global.num.ballroom.l/layer
+					
+					if windrose.length() == 2:
+						l /= 2
+					
+					var shift = Global.dict.windrose[windrose]*l
+					shift += dot.vec.position
+					
+					if dict.position.keys().has(shift):
+						var dot_ = dict.position[shift]
+						dot.add_neighbor(layer, windrose, dot_)
 
 	func init_rombs():
 		dict.romb = {}
@@ -132,6 +161,10 @@ class Ballroom:
 		for dancer in dict.troupe[team_].arr.dancer:
 			dancer.shift(step_)
 
+
+		
+		# dict.Global.num.layer.square]
+
 	func check_grid(grid_,n_):
 		return grid_.x >= 0 && grid_.x <= n_ && grid_.y >= 0 && grid_.y <= n_
 
@@ -151,3 +184,10 @@ class Ballroom:
 			y = limit.y
 		
 		return Vector2(x,y)
+
+	func find_nearest_dot(vec_):
+		for position in dict.position.keys():
+			var d = position.distance_to(vec_)
+			
+			if d < Global.num.ballroom.a/2:
+				obj.current.dot = dict.position[position]
