@@ -12,12 +12,14 @@ class Ballroom:
 
 	func _init():
 		arr.exam = []
+		arr.end = []
 		init_dots()
 		init_squares()
 		init_rombs()
 		init_troupes()
 		obj.current = {}
 		obj.current.dot = null
+		obj.current.dancer = dict.troupe["champion"].arr.dancer.front()
 		color.background = Color.gray
 
 	func init_dots():
@@ -104,6 +106,10 @@ class Ballroom:
 					if dict.position.keys().has(shift):
 						var dot_ = dict.position[shift]
 						dot.add_neighbor(layer, windrose, dot_)
+		
+		for position in dict.position.keys():
+			var dot = dict.position[position]
+			dot.update_color()
 
 	func init_rombs():
 		dict.romb = {}
@@ -148,22 +154,44 @@ class Ballroom:
 			var achor = achors[team]
 			
 			for dancer in troupe.arr.dancer:
-				dancer.vec.position = achor
+				dancer.set_position(achor)
+				dancer.set_dot()
+		
+		for team in dict.troupe.keys():
+			var troupe = dict.troupe[team]
+			
+			for dancer in troupe.arr.dancer:
+				dancer.look_at_enemy()
 
 	func add_exam(team_):
 		var input = {}
 		input.examiner = dict.troupe[team_].arr.dancer.front()
 		input.name = Global.arr.exam.front()
 		var exam = Classes_1.Exam.new(input)
-		arr.exam.append(exam)
+		#arr.exam.append(exam)
 
 	func shift_troupe(team_,step_):
 		for dancer in dict.troupe[team_].arr.dancer:
 			dancer.shift(step_)
-
-
 		
 		# dict.Global.num.layer.square]
+
+	func get_dots_by_pas():
+		var pas = Global.obj.easel.obj.current.pas
+		
+		if pas != null:
+			var dots = []
+			dots.append_array(arr.end)
+			arr.end = []
+			
+			for end in dots:
+				end.update_color()
+				
+			var ends = pas.get_ends()
+			arr.end.append_array(ends)
+			print(arr.end)
+			for end in arr.end:
+				end.update_color()
 
 	func check_grid(grid_,n_):
 		return grid_.x >= 0 && grid_.x <= n_ && grid_.y >= 0 && grid_.y <= n_

@@ -6,7 +6,7 @@ class Pas:
 	var arr = {}
 	var obj = {}
 	var color = {}
-	var node = {}
+	var scene = {}
 
 	func _init(input_):
 		word.chesspiece = input_.chesspiece
@@ -18,12 +18,92 @@ class Pas:
 			var vertex = Global.vec.pas.size/2*square
 			arr.vertex.append(vertex)
 		
-		node.label = Label.new()
-		node.label.rect_position = Vector2(0,0)
-		node.label.text = word.chesspiece
-		#node.label.align = "Center"
-		node.label.add_font_override("font", Global.dict.font["Sabandija"])
-		Global.node.Game.get_node("Easel/Labels").add_child(node.label)
+		scene.card = null
+
+	func get_ends():
+		var dancer = Global.obj.ballroom.obj.current.dancer
+		var ends = []
+		
+		if dancer != null:
+			var start = dancer.obj.dot
+			var windroses = start.dict.neighbor[Global.num.layer.square]
+			var eye = Global.dict.eye[dancer.vec.eye]
+			print(eye,windroses)
+			
+			if windroses.size() > 0:
+				match word.chesspiece:
+					"pawn":
+						var dot = windroses[eye]
+						
+						if dot.obj.dancer == null:
+							ends.append(dot)
+					"rook":
+						for windrose in windroses:
+							if windrose.length() == 1:
+								var dots = get_dots_line(start,windrose)
+								ends.append_array(dots)
+					"bishop":
+						for windrose in windroses:
+							if windrose.length() == 2:
+								var dots = get_dots_line(start,windrose)
+								ends.append_array(dots)
+					"queen":
+						for windrose in windroses:
+							var dots = get_dots_line(start,windrose)
+							ends.append_array(dots)
+					"king":
+						for windrose in windroses:
+							var dot = windroses[windrose]
+						
+							if dot.obj.dancer == null:
+								ends.append(dot)
+					"knight":
+						for windrose in windroses:
+							if windrose.length() == 2:
+								var dots = get_dots_knight(start,windrose)
+								ends.append_array(dots)
+								
+		return ends
+
+	func get_dots_line(start_,windrose_):
+		var dot = start_
+		var dots = []
+		
+		while dot.dict.neighbor[Global.num.layer.square].keys().has(windrose_):
+			dot = dot.dict.neighbor[Global.num.layer.square][windrose_]
+			
+			if dot.obj.dancer == null:
+				dots.append(dot)
+			else:
+				return dots
+		
+		return dots
+
+	func get_dots_knight(start_,windrose_):
+		var size = 2
+		var dot = start_
+		var dots = []
+		
+		while dot.dict.neighbor[Global.num.layer.square].keys().has(windrose_) && dots.size() < size:
+			dot = dot.dict.neighbor[Global.num.layer.square][windrose_]
+			dots.append(dot)
+		
+		if dots.size() == size:
+			var end = dots.back()
+			dots = []
+			
+			for windrose in Global.dict.windrose:
+				if windrose.length() == windrose_.length():
+					if windrose != windrose_ && windrose != Global.dict.reflected_windrose[windrose_]:
+						if end.dict.neighbor[Global.num.layer.square].keys().has(windrose):
+							dot = end.dict.neighbor[Global.num.layer.square][windrose]
+							
+							if dot.obj.dancer == null:
+								dots.append(dot)
+			
+			return dots
+		else:
+			return []
 
 class Easel:
 	var num = {}
@@ -35,6 +115,8 @@ class Easel:
 	var color = {}
 
 	func _init():
+		obj.current = {}
+		obj.current.pas = null
 		init_pass()
 
 	func init_pass():
@@ -48,10 +130,35 @@ class Easel:
 			var pas = Classes_2.Pas.new(input)
 			arr.pas.append(pas)
 		
-		arr.hand.append_array(arr.pas)
 		#apply_chesspiece()
+		fill_hand()
 
 	func apply_chesspiece():
 		var dancer = dict.troupe["mob"].arr.dancer.front()
 		var pas = arr.pas.front()
 		arr.option = []
+
+	func fill_hand():
+		for pas in arr.pas:
+			add_card(pas)
+			
+		update_hand()
+
+	func update_hand():
+		var card_gap = Global.vec.card.size.x+Global.vec.card.size.x*0.1
+		var position = Global.vec.hand.offset
+		position.x -= float(arr.hand.size())/2*card_gap
+		
+		for pas in arr.hand:
+			pas.scene.card.rect_position = position
+			position.x += card_gap
+
+	func add_card(pas_):
+		arr.hand.append(pas_)
+		pas_.scene.card = Global.scene.card.instance()
+		pas_.scene.card.set_name(pas_)
+		Global.node.Hand.add_child(pas_.scene.card)
+
+	func find_directions():
+		if obj.current.pas != null:
+			dict.direction = {}

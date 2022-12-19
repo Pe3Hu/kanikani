@@ -21,16 +21,32 @@ class Dot:
 		vec.position = input_.position
 		obj.ballroom = input_.ballroom
 		obj.ballroom.dict.position[vec.position] = self
+		obj.dancer = null
 		color.background = Color.yellow
-		dict.windrose = {}
 		dict.neighbor = {}
 		
 		for n in Global.arr.n:
 			dict.neighbor[n] = {}
 
+	func update_color():
+		if obj.ballroom.arr.end.has(self):
+			color.current = Color.white
+		else:
+			color.background = Color.yellow
+			
+			for n in arr.n:
+				if n < 0:
+					color.background = Color.blue
+					
+			color.current = color.background
+
 	func add_neighbor(layer_, windrose_, dot_):
 		dict.neighbor[layer_][windrose_] = dot_
 		dot_.dict.neighbor[layer_][Global.dict.reflected_windrose[windrose_]] = self
+
+	func set_dancer(dancer_):
+		obj.dancer = dancer_
+		dancer_.obj.dot = self
 
 class Square:
 	var vec = {}
@@ -228,16 +244,23 @@ class Dancer:
 	var vec = {}
 	var obj = {}
 	var color = {}
+	var scene = {}
 
 	func _init(input_):
 		num.hp = {}
 		num.hp.max = input_.hp
 		num.hp.current = num.hp.max
 		num.a = Global.num.dancer.a
-		vec.position = Vector2(Global.vec.ballroom.offset.x,Global.vec.ballroom.offset.y)
 		obj.troupe = input_.troupe
-		
+		obj.ballroom = obj.troupe.obj.ballroom
+		scene.dancer = Global.scene.dancer.instance()
+		Global.node.Dancers.add_child(scene.dancer)
+		set_position(Vector2(Global.vec.ballroom.offset.x,Global.vec.ballroom.offset.y))
 		set_color()
+		vec.eye = Vector2(1,0)
+		num.angle = {}
+		num.angle.current = 0
+		num.angle.target = 0
 
 	func set_color():
 		match obj.troupe.word.team:
@@ -245,9 +268,40 @@ class Dancer:
 				color.background = Color.red
 			"champion":
 				color.background = Color.green
+		
+		scene.dancer.set_color(color.background)
+
+	func set_position(position_):
+		vec.position = position_
+		scene.dancer.position = vec.position
 
 	func shift(step_):
-		vec.position = obj.troupe.obj.ballroom.limit_step(vec.position,step_)
+		set_position(obj.troupe.obj.ballroom.limit_step(vec.position,step_))
+
+	func update_eye():
+		find_enemy()
+
+	func look_at_enemy():
+		var enemy = find_enemy()
+		var target = enemy.vec.position-vec.position
+		num.angle.target = vec.eye.angle_to(target)
+		vec.eye = target
+		scene.dancer.rotate(num.angle.target)
+		
+		if vec.eye.x != 0:
+			vec.eye.x = vec.eye.x/abs(vec.eye.x)
+		if vec.eye.y != 0:
+			vec.eye.y = vec.eye.y/abs(vec.eye.y)
+
+	func find_enemy():
+		var enemy = obj.ballroom.dict.troupe[Global.dict.opponent[obj.troupe.word.team]].arr.dancer.front()
+		return enemy
+
+	func set_dot():
+		for position in obj.ballroom.dict.position.keys():
+			if position == vec.position:
+				obj.ballroom.dict.position[position].set_dancer(self)
+				return
 
 	func get_damage(damage_):
 		num.hp.current -= damage_
@@ -261,6 +315,9 @@ class Dancer:
 		
 		for exam in obj.troupe.obj.ballroom.arr.exam:
 			exam.arr.examinee.erase(self)
+			
+		scene.dancer.queue_free()
+		#Global.node.Dancers
 
 class Troupe:
 	var word = {}

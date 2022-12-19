@@ -10,7 +10,8 @@ func _input(event):
 	if event is InputEventMouseButton:
 		if Global.flag.click:
 			if Global.obj.keys().has("ballroom"):
-				Global.next_square_layer()
+				if false:
+					Global.next_square_layer()
 				
 			Global.flag.click = !Global.flag.click
 		else:
@@ -26,6 +27,11 @@ func _input(event):
 			Global.obj.ballroom.shift_troupe(team,step)
 		if event.pressed and event.scancode == KEY_S:
 			Global.obj.ballroom.find_nearest_dot(get_viewport().get_mouse_position())
+		if event.pressed and event.scancode == KEY_W:
+			Global.next_square_layer()
+			
+		if event.pressed and event.scancode == KEY_1:
+			Global.node.Hand.visible = !Global.node.Hand.visible
 
 func _process(delta):
 	pass

@@ -10,6 +10,7 @@ var node = {}
 var flag = {}
 var vec = {}
 var color = {}
+var scene = {}
 
 func init_num():
 	init_primary_key()
@@ -73,11 +74,16 @@ func init_dict():
 		var _j = (_i+n/2)%n
 		dict.reflected_windrose[dict.windrose.keys()[_i]] = dict.windrose.keys()[_j]
 	
+	dict.eye = {}
+	
+	for windrose in dict.windrose.keys():
+		var eye = dict.windrose[windrose]
+		dict.eye[eye] = windrose
+	
 	dict.opponent = {
 		"mob": "champion",
 		"champion": "mob"
 	}
-	
 
 func init_window_size():
 	dict.window_size = {}
@@ -120,6 +126,8 @@ func init_arr():
 func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 
 	node.Game = get_node("/root/Game") 
+	node.Hand = get_node("/root/Game/Easel/Hand") 
+	node.Dancers = get_node("/root/Game/Carte/Dancers") 
 
 func init_flag():
 	flag.click = false
@@ -136,6 +144,12 @@ func init_vec():
 	vec.pas = {}
 	vec.pas.size = Vector2(num.ballroom.a*3,num.ballroom.a)
 	vec.pas.offset = Vector2(0,num.pas.offset+vec.pas.size.y/2)
+	
+	vec.card = {}
+	vec.card.size = Vector2(60,90)
+	
+	vec.hand = {}
+	vec.hand.offset = Vector2(dict.window_size.width/2, dict.window_size.height-vec.pas.size.y*2)
 
 func init_color():
 	color.essence = {
@@ -162,9 +176,13 @@ func init_font():
 	
 	for name in names:
 		dict.font[name] = DynamicFont.new()
-		var path = "res://assets/"+name+".TTF"
+		var path = "res://assets/fonts/"+name+".TTF"
 		dict.font[name].font_data = load(path)
 		dict.font[name].size = num.pas.label
+
+func init_scene():
+	scene.dancer = preload("res://scenes/Dancer.tscn")
+	scene.card = preload("res://scenes/Card.tscn")
 
 func _ready():
 	init_dict()
@@ -175,10 +193,12 @@ func _ready():
 	init_vec()
 	init_color()
 	init_font()
+	init_scene()
 
 func next_square_layer():
 	var index = (arr.n.find(num.layer.square)+1)%arr.n.size()
 	num.layer.square = arr.n[index]
+	Global.obj.ballroom.get_dots_by_pas()
 
 func custom_log(value_,base_): 
 	return log(value_)/log(base_)
