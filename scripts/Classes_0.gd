@@ -161,7 +161,8 @@ class Ballroom:
 			var troupe = dict.troupe[team]
 			
 			for dancer in troupe.arr.dancer:
-				dancer.look_at_enemy()
+				var enemy = dancer.find_enemy()
+				dancer.look_at_dot(enemy.obj.dot)
 
 	func add_exam(team_):
 		var input = {}
@@ -189,7 +190,7 @@ class Ballroom:
 				
 			var ends = pas.get_ends()
 			arr.end.append_array(ends)
-			print(arr.end)
+			
 			for end in arr.end:
 				end.update_color()
 
@@ -215,7 +216,11 @@ class Ballroom:
 
 	func find_nearest_dot(vec_):
 		for position in dict.position.keys():
-			var d = position.distance_to(vec_)
+			var dot = dict.position[position]
 			
-			if d < Global.num.ballroom.a/2:
-				obj.current.dot = dict.position[position]
+			if dot.arr.layer.has(Global.num.layer.square):
+				var d = position.distance_to(vec_)
+				
+				if d < Global.num.ballroom.a/2:
+					obj.current.dot = dot
+					return

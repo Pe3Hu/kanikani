@@ -239,6 +239,18 @@ class Exam:
 	func end():
 		obj.ballroom.arr.exam.erase(self)
 
+class Feature:
+	var obj = {}
+	var dict = {}
+	
+	func _init(input_):
+		obj.dancer = input_.dancer
+		
+		for name in Global.dict.feature.base[obj.dancer.obj.troupe.word.team].keys():
+			dict[name] = {}
+			dict[name].max = Global.dict.feature.base[obj.dancer.obj.troupe.word.team][name]
+			dict[name].current = dict[name].max
+
 class Dancer:
 	var num = {}
 	var vec = {}
@@ -247,9 +259,6 @@ class Dancer:
 	var scene = {}
 
 	func _init(input_):
-		num.hp = {}
-		num.hp.max = input_.hp
-		num.hp.current = num.hp.max
 		num.a = Global.num.dancer.a
 		obj.troupe = input_.troupe
 		obj.ballroom = obj.troupe.obj.ballroom
@@ -261,6 +270,12 @@ class Dancer:
 		num.angle = {}
 		num.angle.current = 0
 		num.angle.target = 0
+		init_feature()
+
+	func init_feature():
+		var input = {}
+		input.dancer = self
+		obj.feature = Classes_1.Feature.new(input)
 
 	func set_color():
 		match obj.troupe.word.team:
@@ -278,20 +293,31 @@ class Dancer:
 	func shift(step_):
 		set_position(obj.troupe.obj.ballroom.limit_step(vec.position,step_))
 
-	func update_eye():
-		find_enemy()
+	func look_at_dot(dot_):
+		var vector = dot_.vec.position-vec.position
+		num.angle.target = vec.eye.angle_to(vector)
+		rotate_by(num.angle.target)
 
-	func look_at_enemy():
-		var enemy = find_enemy()
-		var target = enemy.vec.position-vec.position
-		num.angle.target = vec.eye.angle_to(target)
-		vec.eye = target
-		scene.dancer.rotate(num.angle.target)
+	func update_eye():
+		vec.eye = Vector2(1,0).rotated(num.angle.current)
 		
 		if vec.eye.x != 0:
 			vec.eye.x = vec.eye.x/abs(vec.eye.x)
 		if vec.eye.y != 0:
 			vec.eye.y = vec.eye.y/abs(vec.eye.y)
+
+	func get_angle_by_target(dot_):
+		var vector = dot_.vec.position-vec.position
+		num.angle.target = vec.eye.angle_to(vector)
+
+	func rotate_by(angle_):
+		num.angle.current += angle_
+		scene.dancer.rotate(num.angle.current)
+		update_eye()
+
+	func get_time_for_rotate():
+		var time = float(abs(num.angle.current-num.angle.target))/obj.feature.dict["rotate"].current
+		return time
 
 	func find_enemy():
 		var enemy = obj.ballroom.dict.troupe[Global.dict.opponent[obj.troupe.word.team]].arr.dancer.front()
@@ -302,6 +328,15 @@ class Dancer:
 			if position == vec.position:
 				obj.ballroom.dict.position[position].set_dancer(self)
 				return
+
+	func set_target_dot(position_):
+		obj.ballroom.find_nearest_dot(position_)
+		
+		if obj.ballroom.obj.current.dot != null:
+			if obj.ballroom.arr.end.has(obj.ballroom.obj.current.dot):
+				Global.obj.easel.obj.current.pas.obj.dot = obj.ballroom.obj.current.dot
+			else:
+				obj.ballroom.obj.current.dot = null
 
 	func get_damage(damage_):
 		num.hp.current -= damage_

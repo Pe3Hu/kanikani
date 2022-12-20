@@ -11,6 +11,7 @@ class Pas:
 	func _init(input_):
 		word.chesspiece = input_.chesspiece
 		obj.easel = input_.easel
+		obj.dot = null
 		arr.vertex = []
 		color.background = Color.gray
 		
@@ -28,7 +29,7 @@ class Pas:
 			var start = dancer.obj.dot
 			var windroses = start.dict.neighbor[Global.num.layer.square]
 			var eye = Global.dict.eye[dancer.vec.eye]
-			print(eye,windroses)
+			#print(eye,dancer.num.angle.current,windroses)
 			
 			if windroses.size() > 0:
 				match word.chesspiece:
@@ -105,6 +106,25 @@ class Pas:
 		else:
 			return []
 
+	func use():
+		var dancer = Global.obj.ballroom.obj.current.dancer
+		dancer.get_angle_by_target(obj.dot)
+		
+		if dancer.num.angle.current != dancer.num.angle.target:
+			var input = {}
+			input.value = dancer.obj.feature.dict["rotate"].current
+			input.cast = "stream"
+			input.content = "rotate"
+			input.subject = dancer
+			input.object = dancer
+			
+			var data = {}
+			data.dacner = dancer
+			data.effect = Classes_3.Effect.new(input)
+			data.time = dancer.get_time_for_rotate()
+			data.cord = "standart"
+			Global.obj.timeflow.add_pause(data)
+
 class Easel:
 	var num = {}
 	var arr = {}
@@ -159,6 +179,7 @@ class Easel:
 		pas_.scene.card.set_name(pas_)
 		Global.node.Hand.add_child(pas_.scene.card)
 
-	func find_directions():
+	func use_card():
 		if obj.current.pas != null:
-			dict.direction = {}
+			if obj.current.pas.obj.dot != null:
+				obj.current.pas.use()

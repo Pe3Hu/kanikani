@@ -14,3 +14,4 @@ func set_name(pas_):
 func _on_TextureButton_pressed():
 	Global.obj.easel.obj.current.pas = obj.pas
 	Global.obj.ballroom.get_dots_by_pas()
+	Global.obj.ballroom.obj.current.dot = null

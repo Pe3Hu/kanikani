@@ -36,9 +36,15 @@ func init_num():
 	num.easel = {}
 	num.easel.offset = num.ballroom.a/2
 	
+	num.border = {}
+	num.border.gap = num.ballroom.a/2
+	
 	num.pas = {}
 	num.pas.offset = num.ballroom.a/4
 	num.pas.label = num.ballroom.a/2*0.9
+	
+	num.space = {}
+	num.space.l = dict.window_size.width-num.ballroom.cols*num.ballroom.a-num.border.gap*3
 	
 	dict.r = {
 		"circle": [num.ballroom.a]
@@ -84,6 +90,26 @@ func init_dict():
 		"mob": "champion",
 		"champion": "mob"
 	}
+	
+	dict.effect = {}
+	dict.effect.cast = ["stream","splash"]
+	dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
+	
+	dict.feature = {}
+	dict.feature.base = {
+		"champion": {
+			"hp": 1000,
+			"mp": 100,
+			"rotate": 1,
+			"move": 1,
+			"irritant": 1
+		},
+		"mob": {
+			"hp": 1000,
+			"rotate": 1,
+			"move": 1
+		}
+	}
 
 func init_window_size():
 	dict.window_size = {}
@@ -122,24 +148,27 @@ func init_arr():
 	arr.exam = ["classic exam 0"]
 	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
 	arr.pas = ["left rotate","right rotate","move forward"]
+	arr.cord = ["slow","standart","fast"]
 
 func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 
 	node.Game = get_node("/root/Game") 
 	node.Hand = get_node("/root/Game/Easel/Hand") 
-	node.Dancers = get_node("/root/Game/Carte/Dancers") 
+	node.Dancers = get_node("/root/Game/Ballroom/Dancers") 
 
 func init_flag():
 	flag.click = false
 	flag.stop = false
+	flag.timeflow = true
 
 func init_vec():
 	vec.ballroom = {}
-	vec.ballroom.offset = dict.window_size.center-Vector2(num.ballroom.cols,num.ballroom.rows)*num.ballroom.a/2
+	vec.ballroom.offset = Vector2(dict.window_size.width-num.border.gap, dict.window_size.height/2)
+	vec.ballroom.offset -= Vector2(num.ballroom.cols, float(num.ballroom.rows)/2)*num.ballroom.a
 	
 	vec.easel = {}
 	vec.easel.offset = vec.ballroom.offset+Vector2(num.ballroom.cols,0)*num.ballroom.a
-	vec.easel.offset.x += num.easel.offset
+	vec.easel.offset.x += num.border.gap
 	
 	vec.pas = {}
 	vec.pas.size = Vector2(num.ballroom.a*3,num.ballroom.a)
@@ -149,25 +178,19 @@ func init_vec():
 	vec.card.size = Vector2(60,90)
 	
 	vec.hand = {}
-	vec.hand.offset = Vector2(dict.window_size.width/2, dict.window_size.height-vec.pas.size.y*2)
+	vec.hand.offset = Vector2(num.border.gap+num.space.l/2, dict.window_size.height-vec.card.size.y-num.border.gap)
+	
+	vec.timeflow = {}
+	vec.timeflow.offset = Vector2(num.border.gap, dict.window_size.height-vec.card.size.y-num.border.gap*2)
+	
+	vec.cord = {}
+	vec.cord.size = Vector2(num.space.l,num.ballroom.a)
 
 func init_color():
-	color.essence = {
-		"Aqua": Color.from_hsv(230.0/360.0,1,1),
-		"Wind": Color.from_hsv(150.0/360.0,0.8,1),
-		"Fire": Color.from_hsv(0.0/360.0,1,1),
-		"Earth": Color.from_hsv(60.0/360.0,1,1),
-		"Ice": Color.from_hsv(185.0/360.0,1,1),
-		"Storm": Color.from_hsv(270.0/360.0,1,1),
-		"Lava": Color.from_hsv(300.0/360.0,0.8,1),
-		"Plant": Color.from_hsv(120.0/360.0,1,0.6)
-	}
-	color.region = {
-		"North": Color.from_hsv(185.0/360.0,1,1),
-		"East": Color.from_hsv(60.0/360.0,1,1),
-		"South": Color.from_hsv(230.0/360.0,1,1),
-		"West": Color.from_hsv(0.0/360.0,1,1),
-		"Center": Color.from_hsv(120.0/360.0,1,0.6)
+	color.cord = {
+		"fast": Color.from_hsv(120.0/360.0,0.5,1),
+		"standart": Color.from_hsv(240.0/360,0.5,1),
+		"slow": Color.from_hsv(360.0/360.0,0.5,1)
 	}
 
 func init_font():

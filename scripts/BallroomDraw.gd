@@ -18,6 +18,21 @@ func _draw():
 				match zone.word.type:
 					"circle":
 						draw_circle(zone.arr.vertex.front(), zone.num.r, zone.color.background)
+		
+		if Global.obj.ballroom.obj.current.dot:
+			draw_circle_arc(Global.obj.ballroom.obj.current.dot.vec.position, Global.num.dot.a, 0, 360, Color.black)
+			
+
+func draw_circle_arc(center, radius, angle_from, angle_to, color):
+	var nb_points = 32
+	var points_arc = []
+
+	for i in range(nb_points + 1):
+		var angle_point = deg2rad(angle_from + i * (angle_to-angle_from) / nb_points - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
+
+	for index_point in range(nb_points):
+		draw_line(points_arc[index_point], points_arc[index_point + 1], color)
 
 func _process(delta):
 	update()
