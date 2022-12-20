@@ -46,6 +46,11 @@ func init_num():
 	num.space = {}
 	num.space.l = dict.window_size.width-num.ballroom.cols*num.ballroom.a-num.border.gap*3
 	
+	num.dent = {}
+	num.dent.width = 0.1
+	num.dent.weight = 1
+	num.dent.n = 10
+	
 	dict.r = {
 		"circle": [num.ballroom.a]
 	}
@@ -100,7 +105,7 @@ func init_dict():
 		"champion": {
 			"hp": 1000,
 			"mp": 100,
-			"rotate": 1,
+			"rotate": 0.1,
 			"move": 1,
 			"irritant": 1
 		},
@@ -151,6 +156,7 @@ func init_arr():
 	arr.cord = ["slow","standart","fast"]
 
 func init_node():
+	node.Timer = get_node("/root/Game/Timer") 
 	node.TimeBar = get_node("/root/Game/TimeBar") 
 	node.Game = get_node("/root/Game") 
 	node.Hand = get_node("/root/Game/Easel/Hand") 
@@ -159,7 +165,7 @@ func init_node():
 func init_flag():
 	flag.click = false
 	flag.stop = false
-	flag.timeflow = true
+	flag.timeflow = false
 
 func init_vec():
 	vec.ballroom = {}
@@ -185,6 +191,7 @@ func init_vec():
 	
 	vec.cord = {}
 	vec.cord.size = Vector2(num.space.l,num.ballroom.a)
+	num.dent.x = vec.cord.size.x/num.dent.n
 
 func init_color():
 	color.cord = {

@@ -34,7 +34,7 @@ func _input(event):
 		if event.pressed and event.scancode == KEY_W:
 			Global.next_square_layer()
 		if event.pressed and event.scancode == KEY_Q:
-			Global.flag.timeflow = false
+			Global.flag.timeflow = !Global.flag.timeflow
 		if event.pressed and event.scancode == KEY_E:
 			 Global.obj.easel.use_card()
 			
@@ -47,6 +47,7 @@ func _process(delta):
 func _on_Timer_timeout():
 	if Global.flag.timeflow:
 		Global.node.TimeBar.value += 1
+		Global.obj.timeflow.tick(1)
 		
 		if Global.node.TimeBar.value >= Global.node.TimeBar.max_value:
 			Global.node.TimeBar.value -= Global.node.TimeBar.max_value

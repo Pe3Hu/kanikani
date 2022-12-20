@@ -224,3 +224,14 @@ class Ballroom:
 				if d < Global.num.ballroom.a/2:
 					obj.current.dot = dot
 					return
+
+class Sorter:
+	static func sort_ascending(a, b):
+		if a.value < b.value:
+			return true
+		return false
+
+	static func sort_descending(a, b):
+		if a.value > b.value:
+			return true
+		return false
