@@ -19,8 +19,6 @@ func _draw():
 		
 		for dent in Global.obj.timeflow.arr.dent:
 			draw_line(dent.arr.vertex.front(),dent.arr.vertex.back(),dent.color.line,dent.num.weight)
-		
-		
 
 func _process(delta):
 	

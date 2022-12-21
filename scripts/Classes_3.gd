@@ -12,15 +12,29 @@ class Effect:
 		word.content = input_.content
 		obj.subject = input_.subject
 		obj.object = input_.object
+		
+		match word.content:
+			"rotate":
+				num.value *= Global.obj.timeflow.num.tick
+			"move":
+				num.value *= Global.obj.timeflow.num.tick
+				obj.object.obj.dot.obj.dancer = null
+				obj.object.obj.dot = null
+				print("begin",obj.object.vec.position)
+				pass
 
 	func apply():
 #		dict.effect.cast = ["stream","splash"]
 #		dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
-		match obj.content:
+		match word.content:
 			"rotate":
 				var angle = obj.object.num.angle.target-obj.object.num.angle.current
-				var step = min(angle,obj.object.obj.feature["rotate"].current)*sign(angle)
+				var step = float(min(num.value,abs(angle)))*sign(angle)
 				obj.object.rotate_by(step)
+			"move":
+				var d = obj.object.vec.position.distance_to(obj.act.obj.pas.obj.dot.vec.position)
+				var step = float(min(num.value,d))
+				obj.object.move_by(step)
 
 class Act:
 	var num = {}
@@ -30,11 +44,15 @@ class Act:
 
 	func _init(input_):
 		obj.cord = input_.cord
-		obj.dacner = input_.dacner
+		obj.dancer = input_.dancer
 		obj.effect = input_.effect
+		obj.effect.obj.act = self
+		obj.effect.num.time = input_.time
 		obj.timeflow = Global.obj.timeflow
+		obj.pas = input_.pas
+		num.begin = input_.begin
+		num.end = input_.end
 		num.time = input_.time
-		num.pause = input_.pause
 		vec.position = input_.position
 		num.r = Global.num.ballroom.a/4
 		color.current = Color.white
@@ -49,7 +67,11 @@ class Act:
 		if obj.effect.word.cast == "splash":
 			obj.effect.apply()
 		
-		var pause = obj.cord.dict.pause[num.pause]
+		if obj.effect.word.content == "move":
+			obj.dancer.vec.position = obj.pas.obj.dot.vec.position
+			obj.dancer.set_dot()
+		#print(obj.dancer.vec.eye)
+		var pause = obj.cord.dict.pause[num.end]
 		pause.erase(self)
 
 class Cord:
@@ -82,17 +104,17 @@ class Cord:
 		num.y = (arr.vertex.front().y+arr.vertex.back().y)/2
 
 	func add_act(data_):
-		if !dict.pause.keys().has(data_.pause):
-			dict.pause[data_.pause] = []
+		if !dict.pause.keys().has(data_.end):
+			dict.pause[data_.end] = []
 		
-		var time = data_.time
-		var x = time*Global.num.dent.x
-		data_.position = Vector2(obj.timeflow.num.begin+x,num.y)
+		var end = data_.end-obj.timeflow.num.time.current
+		var x = obj.timeflow.num.begin+end*Global.num.dent.x
+		data_.position = Vector2(x,num.y)#
 		data_.cord = self
 		var act = Classes_3.Act.new(data_)
-		dict.pause[data_.pause].append(act)
+		dict.pause[data_.end].append(act)
 		var data = {}
-		data.value = data_.pause
+		data.value = data_.end
 		data.act = act
 		obj.timeflow.arr.timeline.append(data)
 
@@ -126,7 +148,6 @@ class Timeflow:
 		num.time.current = 0
 		num.tick = Global.node.Timer.wait_time#*Global.node.TimeBar.max_value
 		num.shift = Global.num.dent.x*num.tick
-		print(num.shift)
 		arr.timeline = []
 		init_cords()
 		init_dents()
@@ -165,6 +186,7 @@ class Timeflow:
 
 	func tick(repeats_):
 		var timeskip = num.tick*repeats_
+		
 		if arr.timeline.size() > 0:
 			var time = get_closest_act().value
 			
@@ -173,14 +195,17 @@ class Timeflow:
 			
 			num.time.current += timeskip
 			var shift = Vector2(-num.shift*timeskip/num.tick,0)
-			print(num.time.current)
 			
 			for dent in arr.dent:
 				dent.shift(shift)
 			
 			for timeline in arr.timeline:
 				timeline.act.shift(shift)
-				
+			
+			for timeline in arr.timeline:
+				if timeline.act.obj.effect.word.cast == "stream" && timeline.act.num.begin <= num.time.current:
+					timeline.act.obj.effect.apply()
+			
 			if time == num.time.current:
 				for timeline in arr.timeline:
 					if timeline.value == time:
@@ -195,6 +220,7 @@ class Timeflow:
 		return act
 
 	func add_pause(data_):
-		print(data_.time)
-		data_.pause = num.time.current+data_.time
+		#print("new pause ",data_.time)
+		data_.begin = num.time.current+data_.delay
+		data_.end = num.time.current+data_.time+data_.delay
 		dict.cord[data_.cord].add_act(data_)

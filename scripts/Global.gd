@@ -105,8 +105,8 @@ func init_dict():
 		"champion": {
 			"hp": 1000,
 			"mp": 100,
-			"rotate": 0.1,
-			"move": 1,
+			"rotate": 0.5,
+			"move": 100,
 			"irritant": 1
 		},
 		"mob": {
@@ -165,7 +165,7 @@ func init_node():
 func init_flag():
 	flag.click = false
 	flag.stop = false
-	flag.timeflow = false
+	flag.timeflow = true
 
 func init_vec():
 	vec.ballroom = {}

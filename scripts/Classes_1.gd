@@ -242,7 +242,7 @@ class Exam:
 class Feature:
 	var obj = {}
 	var dict = {}
-	
+
 	func _init(input_):
 		obj.dancer = input_.dancer
 		
@@ -301,14 +301,15 @@ class Dancer:
 	func update_eye():
 		vec.eye = Vector2(1,0).rotated(num.angle.current)
 		
-		if vec.eye.x != 0:
-			vec.eye.x = vec.eye.x/abs(vec.eye.x)
-		if vec.eye.y != 0:
-			vec.eye.y = vec.eye.y/abs(vec.eye.y)
+#		if vec.eye.x != 0:
+#			vec.eye.x = vec.eye.x/abs(vec.eye.x)
+#		if vec.eye.y != 0:
+#			vec.eye.y = vec.eye.y/abs(vec.eye.y)
+		pass
 
 	func get_angle_by_target(dot_):
 		var vector = dot_.vec.position-vec.position
-		num.angle.target = vec.eye.angle_to(vector)
+		num.angle.target = vec.eye.angle_to(vector)+num.angle.current
 
 	func rotate_by(angle_):
 		num.angle.current += angle_
@@ -317,6 +318,15 @@ class Dancer:
 
 	func get_time_for_rotate():
 		var time = float(abs(num.angle.current-num.angle.target))/obj.feature.dict["rotate"].current
+		return time
+
+	func move_by(d_):
+		var step = Vector2(vec.eye.x*d_,vec.eye.y*d_)
+		vec.position += step
+		scene.dancer.position = vec.position
+
+	func get_time_for_move(position_):
+		var time = vec.position.distance_to(position_)/obj.feature.dict["move"].current
 		return time
 
 	func find_enemy():
@@ -340,7 +350,7 @@ class Dancer:
 
 	func get_damage(damage_):
 		num.hp.current -= damage_
-		print(num.hp.current)
+		print(self, "now have hp ", num.hp.current)
 		
 		if num.hp.current <= 0:
 			die()

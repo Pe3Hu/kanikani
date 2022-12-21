@@ -28,16 +28,17 @@ class Pas:
 		if dancer != null:
 			var start = dancer.obj.dot
 			var windroses = start.dict.neighbor[Global.num.layer.square]
-			var eye = Global.dict.eye[dancer.vec.eye]
-			#print(eye,dancer.num.angle.current,windroses)
+			#rint(eye,dancer.num.angle.current,windroses)
 			
 			if windroses.size() > 0:
 				match word.chesspiece:
 					"pawn":
-						var dot = windroses[eye]
-						
-						if dot.obj.dancer == null:
-							ends.append(dot)
+						if Global.dict.eye.keys().has(dancer.vec.eye):
+							var eye = Global.dict.eye[dancer.vec.eye]
+							var dot = windroses[eye]
+							
+							if dot.obj.dancer == null:
+								ends.append(dot)
 					"rook":
 						for windrose in windroses:
 							if windrose.length() == 1:
@@ -119,11 +120,30 @@ class Pas:
 			input.object = dancer
 			
 			var data = {}
-			data.dacner = dancer
+			data.dancer = dancer
+			data.pas = self
 			data.effect = Classes_3.Effect.new(input)
 			data.time = dancer.get_time_for_rotate()
+			data.delay = 0
 			data.cord = "standart"
 			Global.obj.timeflow.add_pause(data)
+			
+			input.value = dancer.obj.feature.dict["move"].current
+			input.content = "move"
+			data.effect = Classes_3.Effect.new(input)
+			data.delay = data.time
+			data.cord = "standart"
+			data.time = dancer.get_time_for_move(obj.dot.vec.position)
+			Global.obj.timeflow.add_pause(data)
+			
+			var ends = []
+			ends.append_array(Global.obj.ballroom.arr.end)
+			Global.obj.ballroom.arr.end = []
+			
+			for end in ends:
+				end.update_color()
+				
+			Global.obj.ballroom.obj.current.dot =null
 
 class Easel:
 	var num = {}
