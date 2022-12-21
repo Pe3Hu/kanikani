@@ -90,7 +90,7 @@ class Ballroom:
 				
 				if n < 0:
 					layer = abs(n)-1
-					
+				
 				dot.arr.layer.append(layer)
 			
 			for windrose in Global.dict.windrose.keys():
@@ -107,6 +107,15 @@ class Ballroom:
 						var dot_ = dict.position[shift]
 						dot.add_neighbor(layer, windrose, dot_)
 		
+		for n in Global.arr.n:
+			for squares in dict.square[n]:
+				for square in squares:
+					var dot = dict.position[square.vec.center]
+					dot.arr.center.append(n)
+		
+		update_dot_colors()
+
+	func update_dot_colors():
 		for position in dict.position.keys():
 			var dot = dict.position[position]
 			dot.update_color()
@@ -169,7 +178,7 @@ class Ballroom:
 		input.examiner = dict.troupe[team_].arr.dancer.front()
 		input.name = Global.arr.exam.front()
 		var exam = Classes_1.Exam.new(input)
-		#arr.exam.append(exam)
+		arr.exam.append(exam)
 
 	func shift_troupe(team_,step_):
 		for dancer in dict.troupe[team_].arr.dancer:

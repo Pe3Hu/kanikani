@@ -20,7 +20,6 @@ class Effect:
 				num.value *= Global.obj.timeflow.num.tick
 				obj.object.obj.dot.obj.dancer = null
 				obj.object.obj.dot = null
-				print("begin",obj.object.vec.position)
 				pass
 
 	func apply():

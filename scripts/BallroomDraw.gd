@@ -11,7 +11,7 @@ func _draw():
 			var dot = Global.obj.ballroom.dict.position[position]
 			
 			if dot.arr.layer.has(Global.num.layer.square):
-				draw_circle(dot.vec.position, Global.dict.a[Global.num.layer.square], dot.color.current)
+				draw_circle(dot.vec.position, Global.num.dot.a, dot.color.current)
 
 		for exam in Global.obj.ballroom.arr.exam:
 			for zone in exam.arr.zone:
@@ -20,7 +20,7 @@ func _draw():
 						draw_circle(zone.arr.vertex.front(), zone.num.r, zone.color.background)
 		
 		if Global.obj.ballroom.obj.current.dot:
-			draw_circle_arc(Global.obj.ballroom.obj.current.dot.vec.position, Global.num.dot.a, 0, 360, Color.black)
+			draw_circle_arc(Global.obj.ballroom.obj.current.dot.vec.position, Global.num.dot.a*1.5, 0, 360, Color.black)
 			
 
 func draw_circle_arc(center, radius, angle_from, angle_to, color):

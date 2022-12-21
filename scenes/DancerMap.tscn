@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/dancer.png" type="Texture" id=1]
-[ext_resource path="res://Dancer.gd" type="Script" id=2]
+[ext_resource path="res://scripts/DancerMap.gd" type="Script" id=2]
 
-[node name="Dancer" type="Area2D"]
+[node name="DancerMap" type="Area2D"]
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]

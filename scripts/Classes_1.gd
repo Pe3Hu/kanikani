@@ -16,7 +16,7 @@ class Dot:
 		num.l = input_.l
 		arr.n = input_.ns
 		arr.layer = []
-		arr.a = [Global.num.dot.a/arr.n.front()]
+		arr.center = []
 		vec.grid = input_.grid
 		vec.position = input_.position
 		obj.ballroom = input_.ballroom
@@ -34,10 +34,9 @@ class Dot:
 		else:
 			color.background = Color.yellow
 			
-			for n in arr.n:
-				if n < 0:
-					color.background = Color.blue
-					
+			if arr.center.has(Global.num.layer.square):
+				color.background = Color.blue
+			
 			color.current = color.background
 
 	func add_neighbor(layer_, windrose_, dot_):
@@ -141,7 +140,7 @@ class Penalty:
 				"instantaneous":
 					match word.type:
 						"percent":
-							var damage = float(dancer.num.hp.max*num.value)/100
+							var damage = float(dancer.obj.feature.dict["health"].max*num.value)/100
 							dancer.get_damage(damage)
 		
 		arr.dancer = []
@@ -232,7 +231,7 @@ class Exam:
 			"classic exam 0":
 				input.effect = "instantaneous"
 				input.type = "percent"
-				input.value = 100
+				input.value = 25
 		
 		obj.penalty = Classes_1.Penalty.new(input)
 
@@ -262,15 +261,25 @@ class Dancer:
 		num.a = Global.num.dancer.a
 		obj.troupe = input_.troupe
 		obj.ballroom = obj.troupe.obj.ballroom
-		scene.dancer = Global.scene.dancer.instance()
-		Global.node.Dancers.add_child(scene.dancer)
-		set_position(Vector2(Global.vec.ballroom.offset.x,Global.vec.ballroom.offset.y))
+		init_feature()
+		init_scenes()
 		set_color()
 		vec.eye = Vector2(1,0)
 		num.angle = {}
 		num.angle.current = 0
 		num.angle.target = 0
-		init_feature()
+
+	func init_scenes():
+		scene.dancer = {}
+		scene.dancer.ui = Global.scene.dancer.ui.instance()
+		Global.node.UIDancers.add_child(scene.dancer.ui)
+		scene.dancer.ui.position = Global.vec[obj.troupe.word.team].current
+		Global.vec[obj.troupe.word.team].current.y += Global.vec.dancer.ui.y
+		update_health()
+		
+		scene.dancer.map = Global.scene.dancer.map.instance()
+		Global.node.MapDancers.add_child(scene.dancer.map)
+		set_position(Vector2(Global.vec.ballroom.offset.x,Global.vec.ballroom.offset.y))
 
 	func init_feature():
 		var input = {}
@@ -284,11 +293,12 @@ class Dancer:
 			"champion":
 				color.background = Color.green
 		
-		scene.dancer.set_color(color.background)
+		scene.dancer.map.set_color(color.background)
+		scene.dancer.ui.set_color(color.background)
 
 	func set_position(position_):
 		vec.position = position_
-		scene.dancer.position = vec.position
+		scene.dancer.map.position = vec.position
 
 	func shift(step_):
 		set_position(obj.troupe.obj.ballroom.limit_step(vec.position,step_))
@@ -313,7 +323,7 @@ class Dancer:
 
 	func rotate_by(angle_):
 		num.angle.current += angle_
-		scene.dancer.rotate(num.angle.current)
+		scene.dancer.map.rotate(num.angle.current)
 		update_eye()
 
 	func get_time_for_rotate():
@@ -323,7 +333,7 @@ class Dancer:
 	func move_by(d_):
 		var step = Vector2(vec.eye.x*d_,vec.eye.y*d_)
 		vec.position += step
-		scene.dancer.position = vec.position
+		scene.dancer.map.position = vec.position
 
 	func get_time_for_move(position_):
 		var time = vec.position.distance_to(position_)/obj.feature.dict["move"].current
@@ -349,19 +359,22 @@ class Dancer:
 				obj.ballroom.obj.current.dot = null
 
 	func get_damage(damage_):
-		num.hp.current -= damage_
-		print(self, "now have hp ", num.hp.current)
+		obj.feature.dict["health"].current -= damage_
+		update_health()
 		
-		if num.hp.current <= 0:
+		if obj.feature.dict["health"].current <= 0:
 			die()
+
+	func update_health():
+		scene.dancer.ui.set_healt(self)
 
 	func die():
 		obj.troupe.arr.dancer.erase(self)
 		
 		for exam in obj.troupe.obj.ballroom.arr.exam:
 			exam.arr.examinee.erase(self)
-			
-		scene.dancer.queue_free()
+		
+		scene.dancer.map.queue_free()
 		#Global.node.Dancers
 
 class Troupe:

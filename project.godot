@@ -24,8 +24,7 @@ Classes_3="*res://scripts/Classes_3.gd"
 
 [display]
 
-window/size/width=1000
-window/size/height=640
+window/size/width=1300
 
 [physics]
 

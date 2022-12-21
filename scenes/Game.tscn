@@ -15,7 +15,7 @@ autostart = true
 [node name="TimeBar" type="TextureProgress" parent="."]
 margin_right = 240.0
 margin_bottom = 240.0
-rect_scale = Vector2( 0.25, 0.25 )
+rect_scale = Vector2( 0.2, 0.2 )
 max_value = 20.0
 value = 1.0
 texture_under = ExtResource( 1 )
@@ -28,7 +28,7 @@ tint_progress = Color( 0.964706, 0.584314, 0.0470588, 1 )
 [node name="Ballroom" type="Node2D" parent="."]
 script = ExtResource( 3 )
 
-[node name="Dancers" type="Node" parent="Ballroom"]
+[node name="MapDancers" type="Node" parent="Ballroom"]
 
 [node name="Easel" type="Node2D" parent="."]
 
@@ -36,5 +36,7 @@ script = ExtResource( 3 )
 
 [node name="Timeflow" type="Node2D" parent="."]
 script = ExtResource( 4 )
+
+[node name="UIDancers" type="Node" parent="."]
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/dancer.png" type="Texture" id=1]
+[ext_resource path="res://assets/fonts/ALBA____.TTF" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/bars/bar_120_10.png" type="Texture" id=3]
+[ext_resource path="res://scripts/DancerUI.gd" type="Script" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 10
+use_filter = true
+extra_spacing_space = 4
+font_data = ExtResource( 2 )
+
+[node name="DancerUI" type="Node2D"]
+script = ExtResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 1, 1 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 1 )
+
+[node name="BarHealth" type="TextureProgress" parent="."]
+margin_left = 17.0
+margin_top = -17.0
+margin_right = 137.0
+margin_bottom = -7.0
+value = 100.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 3 )
+tint_under = Color( 0.996078, 0.521569, 0.521569, 1 )
+tint_over = Color( 0.741176, 0.282353, 0.282353, 1 )
+tint_progress = Color( 1, 0.0117647, 0.0117647, 1 )
+
+[node name="LabelHealth" type="Label" parent="."]
+modulate = Color( 1, 0.152941, 0.152941, 1 )
+margin_left = 139.0
+margin_top = -20.0
+margin_right = 153.0
+margin_bottom = -3.0
+custom_fonts/font = SubResource( 1 )
+text = "199"
+
+[node name="BarResource" type="TextureProgress" parent="."]
+visible = false
+margin_left = 17.0
+margin_top = -5.0
+margin_right = 137.0
+margin_bottom = 5.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 3 )
+tint_over = Color( 0, 0, 0, 1 )
+
+[node name="LabelResource" type="Label" parent="."]
+visible = false
+modulate = Color( 0.0431373, 0.0431373, 0.0431373, 1 )
+margin_left = 140.0
+margin_top = -4.0
+margin_right = 154.0
+margin_bottom = 5.0
+custom_fonts/font = SubResource( 1 )
+text = "199"
+
+[node name="BarUltimate" type="TextureProgress" parent="."]
+visible = false
+modulate = Color( 1, 1, 0, 1 )
+margin_left = 17.0
+margin_top = 7.0
+margin_right = 137.0
+margin_bottom = 17.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 3 )
+tint_over = Color( 0, 0, 0, 1 )
+
+[node name="LabelUltimate" type="Label" parent="."]
+visible = false
+modulate = Color( 1, 1, 0, 1 )
+margin_left = 140.0
+margin_top = 8.0
+margin_right = 154.0
+margin_bottom = 17.0
+custom_fonts/font = SubResource( 1 )
+text = "199"

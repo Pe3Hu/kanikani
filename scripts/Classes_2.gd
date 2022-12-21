@@ -143,7 +143,7 @@ class Pas:
 			for end in ends:
 				end.update_color()
 				
-			Global.obj.ballroom.obj.current.dot =null
+			Global.obj.ballroom.obj.current.dot = null
 
 class Easel:
 	var num = {}

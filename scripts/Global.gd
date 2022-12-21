@@ -25,7 +25,7 @@ func init_num():
 	num.ballroom.width = 1
 	
 	num.dot = {}
-	num.dot.a = num.ballroom.a/3
+	num.dot.a = num.ballroom.a/6
 	
 	num.dancer = {}
 	num.dancer.a = num.ballroom.a/6
@@ -58,7 +58,7 @@ func init_num():
 	dict.a = {}
 	
 	for n in Global.arr.n:
-		dict.a[n] = num.ballroom.a/n/2
+		dict.a[n] = num.ballroom.a/n
 
 func init_primary_key():
 	num.primary_key = {}
@@ -103,14 +103,14 @@ func init_dict():
 	dict.feature = {}
 	dict.feature.base = {
 		"champion": {
-			"hp": 1000,
-			"mp": 100,
+			"health": 100,
+			"resource": 100,
 			"rotate": 0.5,
 			"move": 100,
 			"irritant": 1
 		},
 		"mob": {
-			"hp": 1000,
+			"health": 1000,
 			"rotate": 1,
 			"move": 1
 		}
@@ -160,7 +160,8 @@ func init_node():
 	node.TimeBar = get_node("/root/Game/TimeBar") 
 	node.Game = get_node("/root/Game") 
 	node.Hand = get_node("/root/Game/Easel/Hand") 
-	node.Dancers = get_node("/root/Game/Ballroom/Dancers") 
+	node.MapDancers = get_node("/root/Game/Ballroom/MapDancers") 
+	node.UIDancers = get_node("/root/Game/UIDancers") 
 
 func init_flag():
 	flag.click = false
@@ -192,6 +193,18 @@ func init_vec():
 	vec.cord = {}
 	vec.cord.size = Vector2(num.space.l,num.ballroom.a)
 	num.dent.x = vec.cord.size.x/num.dent.n
+	
+	vec.dancer = {}
+	vec.dancer.ui = Vector2(200,35)
+	
+	vec.champion = {}
+	vec.champion.offset = Vector2(num.border.gap+node.TimeBar.rect_size.x*node.TimeBar.rect_scale.x,num.border.gap)
+	vec.champion.current = vec.champion.offset
+	
+	vec.mob = {}
+	vec.mob.offset = Vector2(vec.ballroom.offset.x-vec.dancer.ui.x+num.border.gap,num.border.gap)
+	vec.mob.current = vec.mob.offset
+	
 
 func init_color():
 	color.cord = {
@@ -211,7 +224,9 @@ func init_font():
 		dict.font[name].size = num.pas.label
 
 func init_scene():
-	scene.dancer = preload("res://scenes/Dancer.tscn")
+	scene.dancer = {}
+	scene.dancer.map = preload("res://scenes/DancerMap.tscn")
+	scene.dancer.ui = preload("res://scenes/DancerUI.tscn")
 	scene.card = preload("res://scenes/Card.tscn")
 
 func _ready():
@@ -228,6 +243,7 @@ func _ready():
 func next_square_layer():
 	var index = (arr.n.find(num.layer.square)+1)%arr.n.size()
 	num.layer.square = arr.n[index]
+	Global.obj.ballroom.update_dot_colors()
 	Global.obj.ballroom.get_dots_by_pas()
 
 func custom_log(value_,base_): 
