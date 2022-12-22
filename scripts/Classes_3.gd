@@ -15,9 +15,9 @@ class Effect:
 		
 		match word.content:
 			"rotate":
-				num.value *= Global.obj.timeflow.num.tick
+				num.value *= Global.obj.timeflow.num.delta
 			"move":
-				num.value *= Global.obj.timeflow.num.tick
+				num.value *= Global.obj.timeflow.num.delta
 				obj.object.obj.dot.obj.dancer = null
 				obj.object.obj.dot = null
 				pass
@@ -40,6 +40,7 @@ class Act:
 	var vec = {}
 	var obj = {}
 	var color = {}
+	var scene = {}
 
 	func _init(input_):
 		obj.cord = input_.cord
@@ -55,12 +56,21 @@ class Act:
 		vec.position = input_.position
 		num.r = Global.num.ballroom.a/4
 		color.current = Color.white
+		init_scenes()
+
+	func init_scenes():
+		scene.act = Global.scene.act.instance()
+		Global.node.Acts.add_child(scene.act)
+		scene.act.position = vec.position
+		scene.act.set_sprites(self)
 
 	func shift(vec_):
 		vec.position.x += vec_.x
 		
 		if vec.position.x <= obj.timeflow.num.begin:
 			vec.position.x = obj.timeflow.num.begin
+		
+		scene.act.position = vec.position
 
 	func die():
 		if obj.effect.word.cast == "splash":
@@ -72,6 +82,8 @@ class Act:
 		#print(obj.dancer.vec.eye)
 		var pause = obj.cord.dict.pause[num.end]
 		pause.erase(self)
+		#Global.node.Acts.queue_free(scene.act)
+		scene.act.queue_free()
 
 class Cord:
 	var word = {}
@@ -145,8 +157,7 @@ class Timeflow:
 	func _init():
 		num.time = {}
 		num.time.current = 0
-		num.tick = Global.node.Timer.wait_time#*Global.node.TimeBar.max_value
-		num.shift = Global.num.dent.x*num.tick
+		num.shift = Global.num.dent.x
 		arr.timeline = []
 		init_cords()
 		init_dents()
@@ -183,17 +194,18 @@ class Timeflow:
 		
 		num.end = input.vertexs.front().x
 
-	func tick(repeats_):
-		var timeskip = num.tick*repeats_
+	func tick(delta_):
+		num.delta = delta_
+		var timeskip = delta_
 		
 		if arr.timeline.size() > 0:
 			var time = get_closest_act().value
 			
-			if time < timeskip + num.time.current:
+			if time < delta_+num.time.current:
 				timeskip = time-num.time.current
 			
 			num.time.current += timeskip
-			var shift = Vector2(-num.shift*timeskip/num.tick,0)
+			var shift = Vector2(-num.shift*timeskip,0)
 			
 			for dent in arr.dent:
 				dent.shift(shift)

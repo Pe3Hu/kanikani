@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/dancer.png-06c1af682a4e86a626bd16bd6a2cb5f8.stex"
+path="res://.import/dancer_arrow.png-4648858cbf2553074e2129be2ca99b3f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/dancer.png"
-dest_files=[ "res://.import/dancer.png-06c1af682a4e86a626bd16bd6a2cb5f8.stex" ]
+source_file="res://assets/dancers/dancer_arrow.png"
+dest_files=[ "res://.import/dancer_arrow.png-4648858cbf2553074e2129be2ca99b3f.stex" ]
 
 [params]
 

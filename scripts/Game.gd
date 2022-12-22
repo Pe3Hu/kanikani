@@ -42,16 +42,19 @@ func _input(event):
 			Global.node.Hand.visible = !Global.node.Hand.visible
 
 func _process(delta):
-	pass
+	
+	if Global.flag.timeflow:
+		Global.obj.timeflow.tick(delta)
+		
+		if Global.obj.keys().has("ballroom"):
+			for exam in Global.obj.ballroom.arr.exam:
+				exam.obj.challenge.tick()
+	#print(delta,"FPS " + String(Engine.get_frames_per_second()))
 
 func _on_Timer_timeout():
 	if Global.flag.timeflow:
 		Global.node.TimeBar.value += 1
-		Global.obj.timeflow.tick(1)
 		
 		if Global.node.TimeBar.value >= Global.node.TimeBar.max_value:
 			Global.node.TimeBar.value -= Global.node.TimeBar.max_value
 			
-			if Global.obj.keys().has("ballroom"):
-				for exam in Global.obj.ballroom.arr.exam:
-					exam.obj.challenge.tick()

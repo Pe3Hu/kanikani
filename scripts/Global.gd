@@ -155,6 +155,13 @@ func init_arr():
 	arr.pas = ["left rotate","right rotate","move forward"]
 	arr.cord = ["slow","standart","fast"]
 
+func init_scene():
+	scene.dancer = {}
+	scene.dancer.map = preload("res://scenes/DancerMap.tscn")
+	scene.dancer.ui = preload("res://scenes/DancerUI.tscn")
+	scene.card = preload("res://scenes/Card.tscn")
+	scene.act = preload("res://scenes/Act.tscn")
+
 func init_node():
 	node.Timer = get_node("/root/Game/Timer") 
 	node.TimeBar = get_node("/root/Game/TimeBar") 
@@ -162,6 +169,7 @@ func init_node():
 	node.Hand = get_node("/root/Game/Easel/Hand") 
 	node.MapDancers = get_node("/root/Game/Ballroom/MapDancers") 
 	node.UIDancers = get_node("/root/Game/UIDancers") 
+	node.Acts = get_node("/root/Game/Timeflow/Acts") 
 
 func init_flag():
 	flag.click = false
@@ -222,12 +230,6 @@ func init_font():
 		var path = "res://assets/fonts/"+name+".TTF"
 		dict.font[name].font_data = load(path)
 		dict.font[name].size = num.pas.label
-
-func init_scene():
-	scene.dancer = {}
-	scene.dancer.map = preload("res://scenes/DancerMap.tscn")
-	scene.dancer.ui = preload("res://scenes/DancerUI.tscn")
-	scene.card = preload("res://scenes/Card.tscn")
 
 func _ready():
 	init_dict()

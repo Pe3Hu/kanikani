@@ -12,13 +12,9 @@ func _draw():
 			
 			if key == "slow":
 				draw_line(cord.arr.vertex[2],cord.arr.vertex[3],cord.color.line,cord.num.weight)
-			
-			for pause in cord.dict.pause.keys():
-				for act in cord.dict.pause[pause]:
-					draw_circle(act.vec.position, act.num.r, act.color.current)
 		
-		for dent in Global.obj.timeflow.arr.dent:
-			draw_line(dent.arr.vertex.front(),dent.arr.vertex.back(),dent.color.line,dent.num.weight)
+		#for dent in Global.obj.timeflow.arr.dent:
+		#	draw_line(dent.arr.vertex.front(),dent.arr.vertex.back(),dent.color.line,dent.num.weight)
 
 func _process(delta):
 	
