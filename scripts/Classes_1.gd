@@ -289,7 +289,7 @@ class Dancer:
 	func set_color():
 		match obj.troupe.word.team:
 			"mob":
-				color.background = Color.red
+				color.background = Color.purple
 			"champion":
 				color.background = Color.green
 		

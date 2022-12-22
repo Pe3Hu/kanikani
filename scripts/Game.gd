@@ -32,7 +32,7 @@ func _input(event):
 		if event.pressed and event.scancode == KEY_S:
 			Global.obj.ballroom.find_nearest_dot(get_viewport().get_mouse_position())
 		if event.pressed and event.scancode == KEY_W:
-			Global.next_square_layer()
+			Global.set_square_layer(null)
 		if event.pressed and event.scancode == KEY_Q:
 			Global.flag.timeflow = !Global.flag.timeflow
 		if event.pressed and event.scancode == KEY_E:
@@ -42,7 +42,6 @@ func _input(event):
 			Global.node.Hand.visible = !Global.node.Hand.visible
 
 func _process(delta):
-	
 	if Global.flag.timeflow:
 		Global.obj.timeflow.tick(delta)
 		
@@ -57,4 +56,3 @@ func _on_Timer_timeout():
 		
 		if Global.node.TimeBar.value >= Global.node.TimeBar.max_value:
 			Global.node.TimeBar.value -= Global.node.TimeBar.max_value
-			

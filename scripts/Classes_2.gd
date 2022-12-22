@@ -2,18 +2,22 @@ extends Node
 
 
 class Pas:
+	var num = {}
 	var word = {}
 	var arr = {}
 	var obj = {}
 	var color = {}
 	var scene = {}
+	var flag = {}
 
 	func _init(input_):
+		num.layer = input_.layer
 		word.chesspiece = input_.chesspiece
 		obj.easel = input_.easel
 		obj.dot = null
 		arr.vertex = []
 		color.background = Color.gray
+		word.border = ""
 		
 		for square in Global.arr.square:
 			var vertex = Global.vec.pas.size/2*square
@@ -145,6 +149,13 @@ class Pas:
 				
 			Global.obj.ballroom.obj.current.dot = null
 
+	func check_access():
+		print(Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer,num.layer)
+		if Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer.has(num.layer):
+			word.border = "access"
+		else:
+			word.border = "denied"
+
 class Easel:
 	var num = {}
 	var arr = {}
@@ -166,9 +177,17 @@ class Easel:
 		for chesspiece in Global.arr.chesspiece:
 			var input = {}
 			input.chesspiece = chesspiece
+			input.layer = Global.get_random_element(Global.arr.pas_layer)
 			input.easel = self
 			var pas = Classes_2.Pas.new(input)
 			arr.pas.append(pas)
+		
+		var input = {}
+		input.chesspiece = "king"
+		input.layer = 12
+		input.easel = self
+		var pas = Classes_2.Pas.new(input)
+		arr.pas.append(pas)
 		
 		#apply_chesspiece()
 		fill_hand()
@@ -190,14 +209,20 @@ class Easel:
 		position.x -= float(arr.hand.size())/2*card_gap
 		
 		for pas in arr.hand:
-			pas.scene.card.rect_position = position
+			pas.scene.card.position = position
 			position.x += card_gap
 
 	func add_card(pas_):
 		arr.hand.append(pas_)
 		pas_.scene.card = Global.scene.card.instance()
-		pas_.scene.card.set_name(pas_)
+		pas_.check_access()
+		pas_.scene.card.set_spirtes(pas_)
 		Global.node.Hand.add_child(pas_.scene.card)
+		
+		if Global.vec.card.size == null:
+			Global.vec.card.size = pas_.scene.card.get_size()
+			Global.vec.hand.offset.y -= Global.vec.card.size.y
+			Global.vec.timeflow.offset.y -= Global.vec.card.size.y
 
 	func use_card():
 		if obj.current.pas != null:

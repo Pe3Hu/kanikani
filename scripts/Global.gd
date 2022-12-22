@@ -150,10 +150,12 @@ func init_arr():
 	]
 	
 	arr.n = [1,2,3,4,12]
+	arr.pas_layer = [2,3,4]
 	arr.exam = ["classic exam 0"]
 	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
 	arr.pas = ["left rotate","right rotate","move forward"]
 	arr.cord = ["slow","standart","fast"]
+	arr.card = ["Chesspiece","Layer","Skill","Border"]
 
 func init_scene():
 	scene.dancer = {}
@@ -190,13 +192,13 @@ func init_vec():
 	vec.pas.offset = Vector2(0,num.pas.offset+vec.pas.size.y/2)
 	
 	vec.card = {}
-	vec.card.size = Vector2(60,90)
+	vec.card.size = null
 	
 	vec.hand = {}
-	vec.hand.offset = Vector2(num.border.gap+num.space.l/2, dict.window_size.height-vec.card.size.y-num.border.gap)
+	vec.hand.offset = Vector2(num.border.gap+num.space.l/2, dict.window_size.height-num.border.gap)
 	
 	vec.timeflow = {}
-	vec.timeflow.offset = Vector2(num.border.gap, dict.window_size.height-vec.card.size.y-num.border.gap*2)
+	vec.timeflow.offset = Vector2(num.border.gap, dict.window_size.height-num.border.gap*2)
 	
 	vec.cord = {}
 	vec.cord.size = Vector2(num.space.l,num.ballroom.a)
@@ -236,15 +238,19 @@ func _ready():
 	init_arr()
 	init_num()
 	init_node()
+	init_scene()
 	init_flag()
 	init_vec()
 	init_color()
 	init_font()
-	init_scene()
 
-func next_square_layer():
-	var index = (arr.n.find(num.layer.square)+1)%arr.n.size()
-	num.layer.square = arr.n[index]
+func set_square_layer(layer_):
+	if layer_ == null:
+		var index = (arr.n.find(num.layer.square)+1)%arr.n.size()
+		num.layer.square = arr.n[index]
+	else:
+		num.layer.square = layer_
+	
 	Global.obj.ballroom.update_dot_colors()
 	Global.obj.ballroom.get_dots_by_pas()
 

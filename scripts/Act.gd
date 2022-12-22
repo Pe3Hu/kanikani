@@ -20,8 +20,6 @@ func set_effect(act_):
 		"move":
 			path += act_.obj.effect.word.content+"/"
 			name_ = act_.obj.pas.word.chesspiece+name_
-			print(path)
-			print(name_)
 	
 	var texture = ImageTexture.new()
 	var image = Image.new()
