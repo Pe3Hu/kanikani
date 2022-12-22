@@ -1,12 +1,15 @@
-extends Node2D
+extends Area2D
 
 
 var obj = {}
 
+func _ready() -> void:
+	self.connect("mouse_entered", self, "_on_Card_mouse_entered")
+
 func set_spirtes(pas_):
 	obj.pas = pas_
 	
-	for key in Global.arr.card:
+	for key in Global.arr.sprite.card:
 		var sprite = get_node(key)
 		var path = "res://assets/"
 		var name_ = ".png"
@@ -23,7 +26,6 @@ func set_spirtes(pas_):
 			"Border":
 				path = path+"cards/"
 				name_ = pas_.word.border+name_
-				print(path,name_)
 		
 		var texture = ImageTexture.new()
 		var image = Image.new()
@@ -32,12 +34,24 @@ func set_spirtes(pas_):
 		sprite.texture = texture
 
 func get_size():
-	var size = get_node("TextureButton").rect_size*scale
+	#var size = get_node("CollisionShape2D").position*2*scale
+	var size = Vector2(80,120)
+	var shape = get_node("CollisionShape2D").get_shape()
+	print(shape)
 	return size
 
-func _on_TextureButton_pressed():
+func _on_Card_mouse_entered():
 	if obj.pas.word.border == "access":
-		Global.obj.easel.obj.current.pas = obj.pas
-		Global.set_square_layer(obj.pas.num.layer)
-		Global.obj.ballroom.get_dots_by_pas()
-		Global.obj.ballroom.obj.current.dot = null
+		scale = Vector2(Global.num.card.zoom,Global.num.card.zoom)
+
+func _on_Card_mouse_exited():
+	if obj.pas.word.border == "access":
+		scale = Vector2(1,1)
+
+func _on_Card_input_event(viewport, event, shape_idx):
+	if (event is InputEventMouseButton && event.pressed):
+		if obj.pas.word.border == "access":
+			Global.obj.easel.obj.current.pas = obj.pas
+			Global.set_square_layer(obj.pas.num.layer)
+			Global.obj.ballroom.get_dots_by_pas()
+			Global.obj.ballroom.obj.current.dot = null

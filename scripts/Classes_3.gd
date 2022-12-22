@@ -7,32 +7,39 @@ class Effect:
 	var obj = {}
 
 	func _init(input_):
-		num.value = input_.value
+		num.value = {}
+		num.value.max = input_.value
+		num.value.current = input_.value
 		word.cast = input_.cast
 		word.content = input_.content
 		obj.subject = input_.subject
 		obj.object = input_.object
 		
 		match word.content:
-			"rotate":
-				num.value *= Global.obj.timeflow.num.delta
 			"move":
-				num.value *= Global.obj.timeflow.num.delta
 				obj.object.obj.dot.obj.dancer = null
 				obj.object.obj.dot = null
-				pass
+
+	func update_value():
+		
+		match word.content:
+			"rotate":
+				num.value.current = Global.obj.timeflow.num.delta*num.value.max
+			"move":
+				num.value.current = Global.obj.timeflow.num.delta*num.value.max
 
 	func apply():
+		update_value()
 #		dict.effect.cast = ["stream","splash"]
 #		dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
 		match word.content:
 			"rotate":
 				var angle = obj.object.num.angle.target-obj.object.num.angle.current
-				var step = float(min(num.value,abs(angle)))*sign(angle)
+				var step = float(min(num.value.current,abs(angle)))*sign(angle)
 				obj.object.rotate_by(step)
 			"move":
 				var d = obj.object.vec.position.distance_to(obj.act.obj.pas.obj.dot.vec.position)
-				var step = float(min(num.value,d))
+				var step = float(min(num.value.current,d))
 				obj.object.move_by(step)
 
 class Act:
@@ -41,6 +48,7 @@ class Act:
 	var obj = {}
 	var color = {}
 	var scene = {}
+	var flag = {}
 
 	func _init(input_):
 		obj.cord = input_.cord
@@ -56,6 +64,7 @@ class Act:
 		vec.position = input_.position
 		num.r = Global.num.ballroom.a/4
 		color.current = Color.white
+		flag.temp = true
 		init_scenes()
 
 	func init_scenes():
@@ -73,17 +82,27 @@ class Act:
 		scene.act.position = vec.position
 
 	func die():
-		if obj.effect.word.cast == "splash":
-			obj.effect.apply()
+		if !flag.temp:
+			if obj.effect.word.cast == "splash":
+				obj.effect.apply()
+			
+			if obj.effect.word.content == "move":
+				obj.dancer.vec.position = obj.pas.obj.dot.vec.position
+				obj.dancer.set_dot()
 		
-		if obj.effect.word.content == "move":
-			obj.dancer.vec.position = obj.pas.obj.dot.vec.position
-			obj.dancer.set_dot()
-		#print(obj.dancer.vec.eye)
 		var pause = obj.cord.dict.pause[num.end]
 		pause.erase(self)
-		#Global.node.Acts.queue_free(scene.act)
-		scene.act.queue_free()
+		
+		if scene.act != null:
+			scene.act.queue_free()
+			scene.act = null
+		
+		for timeline in Global.obj.timeflow.arr.timeline:
+			if timeline.act == self:
+				Global.obj.timeflow.arr.timeline.erase(self)
+			
+		if Global.obj.timeflow.arr.timeline.size() == 0:
+			Global.obj.timeflow.flag.stop = true
 
 class Cord:
 	var word = {}
@@ -153,12 +172,15 @@ class Timeflow:
 	var dict = {}
 	var arr = {}
 	var obj = {}
+	var flag = {}
 
 	func _init():
 		num.time = {}
 		num.time.current = 0
 		num.shift = Global.num.dent.x
 		arr.timeline = []
+		flag.narrow = false
+		flag.stop = true
 		init_cords()
 		init_dents()
 
@@ -198,7 +220,7 @@ class Timeflow:
 		num.delta = delta_
 		var timeskip = delta_
 		
-		if arr.timeline.size() > 0:
+		if arr.timeline.size() > 0 && !flag.stop:
 			var time = get_closest_act().value
 			
 			if time < delta_+num.time.current:
@@ -235,3 +257,20 @@ class Timeflow:
 		data_.begin = num.time.current+data_.delay
 		data_.end = num.time.current+data_.time+data_.delay
 		dict.cord[data_.cord].add_act(data_)
+
+	func shift_act_sprites():
+		flag.narrow = !flag.narrow
+		
+		for timeline in arr.timeline:
+			if flag.narrow:
+				timeline.act.switch_narrow()
+
+	func clean_temp():
+		for timeline in arr.timeline:
+			if timeline.act.flag.temp:
+				timeline.act.die()
+
+	func fix_temp():
+		for timeline in arr.timeline:
+			if timeline.act.flag.temp:
+				timeline.act.flag.temp = false

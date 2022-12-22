@@ -111,7 +111,7 @@ class Pas:
 		else:
 			return []
 
-	func use():
+	func preuse():
 		var dancer = Global.obj.ballroom.obj.current.dancer
 		dancer.get_angle_by_target(obj.dot)
 		
@@ -150,7 +150,6 @@ class Pas:
 			Global.obj.ballroom.obj.current.dot = null
 
 	func check_access():
-		print(Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer,num.layer)
 		if Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer.has(num.layer):
 			word.border = "access"
 		else:
@@ -204,7 +203,7 @@ class Easel:
 		update_hand()
 
 	func update_hand():
-		var card_gap = Global.vec.card.size.x+Global.vec.card.size.x*0.1
+		var card_gap = Global.vec.card.size.x*Global.num.card.zoom
 		var position = Global.vec.hand.offset
 		position.x -= float(arr.hand.size())/2*card_gap
 		
@@ -221,10 +220,11 @@ class Easel:
 		
 		if Global.vec.card.size == null:
 			Global.vec.card.size = pas_.scene.card.get_size()
-			Global.vec.hand.offset.y -= Global.vec.card.size.y
-			Global.vec.timeflow.offset.y -= Global.vec.card.size.y
+			Global.vec.hand.offset.y -= Global.vec.card.size.y/2*Global.num.card.zoom
+			Global.vec.hand.offset.x += Global.vec.card.size.x/2*Global.num.card.zoom
+			Global.vec.timeflow.offset.y -= Global.vec.card.size.y*Global.num.card.zoom
 
-	func use_card():
+	func preuse_card():
 		if obj.current.pas != null:
 			if obj.current.pas.obj.dot != null:
-				obj.current.pas.use()
+				obj.current.pas.preuse()

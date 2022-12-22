@@ -350,11 +350,13 @@ class Dancer:
 				return
 
 	func set_target_dot(position_):
+		Global.obj.timeflow.clean_temp()
 		obj.ballroom.find_nearest_dot(position_)
 		
 		if obj.ballroom.obj.current.dot != null:
 			if obj.ballroom.arr.end.has(obj.ballroom.obj.current.dot):
 				Global.obj.easel.obj.current.pas.obj.dot = obj.ballroom.obj.current.dot
+				Global.obj.easel.obj.current.pas.preuse()
 			else:
 				obj.ballroom.obj.current.dot = null
 

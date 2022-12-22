@@ -51,6 +51,9 @@ func init_num():
 	num.dent.weight = 1
 	num.dent.n = 10
 	
+	num.card = {}
+	num.card.zoom = 1.2
+	
 	dict.r = {
 		"circle": [num.ballroom.a]
 	}
@@ -155,7 +158,10 @@ func init_arr():
 	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
 	arr.pas = ["left rotate","right rotate","move forward"]
 	arr.cord = ["slow","standart","fast"]
-	arr.card = ["Chesspiece","Layer","Skill","Border"]
+	
+	arr.sprite = {}
+	arr.sprite.card = ["Chesspiece","Layer","Skill","Border"]
+	arr.sprite.act = ["Dancer","Effect","Narrow"]
 
 func init_scene():
 	scene.dancer = {}
@@ -176,7 +182,6 @@ func init_node():
 func init_flag():
 	flag.click = false
 	flag.stop = false
-	flag.timeflow = true
 
 func init_vec():
 	vec.ballroom = {}

@@ -234,6 +234,12 @@ class Ballroom:
 					obj.current.dot = dot
 					return
 
+	func check_borderline(mouse_):
+		var offset = Global.vec.ballroom.offset
+		var x = offset.x <= mouse_.x && offset.x+Global.num.ballroom.l >= mouse_.x
+		var y = offset.y <= mouse_.y && offset.y+Global.num.ballroom.l >= mouse_.y
+		return x && y
+
 class Sorter:
 	static func sort_ascending(a, b):
 		if a.value < b.value:
