@@ -176,13 +176,8 @@ class Ballroom:
 	func set_exams():
 		for team in dict.troupe.keys():
 			for dancer in dict.troupe[team].arr.dancer:
-				for exam in Global.dict.dancer.exam[dancer.word.name]:
-					dancer.add_exam(exam)
-#		var input = {}
-#		input.examiner = dict.troupe[team_].arr.dancer.front()
-#		input.name = Global.arr.exam.front()
-#		var exam = Classes_1.Exam.new(input)
-#		arr.exam.append(exam)
+				for exam in dancer.arr.exam:
+					exam.set_descriptions()
 
 	func shift_troupe(team_,step_):
 		for dancer in dict.troupe[team_].arr.dancer:
@@ -191,7 +186,7 @@ class Ballroom:
 		# dict.Global.num.layer.square]
 
 	func get_dots_by_pas():
-		var pas = Global.obj.easel.obj.current.pas
+		var pas = Global.current.pas
 		
 		if pas != null:
 			var dots = []
@@ -235,10 +230,8 @@ class Ballroom:
 				var d = position.distance_to(vec_)
 				
 				if d < Global.num.ballroom.a/2:
-					obj.current.dot = dot
+					Global.current.dot = dot
 					return
-
-
 
 	func check_borderline(mouse_):
 		var offset = Global.vec.ballroom.offset

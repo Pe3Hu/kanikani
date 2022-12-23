@@ -1,7 +1,6 @@
 extends Node2D
 
 
-
 func set_sprite(team_,color_):
 	var sprite = get_node("Sprite")
 	var path = "res://assets/dancers/"

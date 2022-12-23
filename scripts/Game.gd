@@ -14,14 +14,13 @@ func _input(event):
 				var mouse = get_viewport().get_mouse_position()
 				
 				if Global.obj.ballroom.check_borderline(mouse):
-					if Global.obj.keys().has("easel"):
-						if Global.obj.easel.obj.current.pas != null:
-							if Global.obj.ballroom.obj.current.dancer != null:
-								Global.obj.ballroom.obj.current.dancer.set_target_dot(mouse)
+					if Global.current.dancer != null:
+						Global.current.dancer.set_target_dot(mouse)
 				
 			Global.flag.click = !Global.flag.click
 		else:
 			Global.flag.click = !Global.flag.click
+	
 	if event is InputEventKey:
 		if event.pressed and event.scancode == KEY_S:
 			Global.obj.ballroom.find_nearest_dot(get_viewport().get_mouse_position())

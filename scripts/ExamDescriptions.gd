@@ -16,6 +16,8 @@ func _ready():
 				"type": "homing",
 				"target": "max health",
 				"vector": Vector2(0,0),
+				"min distance": 2,
+				"max distance": 20,
 			},
 			"penalty": {
 				"effect": "instantaneous",
@@ -35,6 +37,8 @@ func _ready():
 				"type": "circle",
 				"target": "max health",
 				"vector": Vector2(Global.num.ballroom.a,0),
+				"min distance": 0,
+				"max distance": 22,
 			},
 			"penalty": {
 				"effect": "instantaneous",

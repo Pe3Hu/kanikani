@@ -6,8 +6,10 @@ var obj = {}
 func _ready() -> void:
 	self.connect("mouse_entered", self, "_on_Card_mouse_entered")
 
-func set_spirtes(pas_):
-	obj.pas = pas_
+func set_spirtes(data_):
+	obj.card = data_
+	obj.pas = data_.obj.pas 
+	obj.exam = data_.obj.exam 
 	
 	for key in Global.arr.sprite.card:
 		var sprite = get_node(key)
@@ -17,15 +19,16 @@ func set_spirtes(pas_):
 		match key:
 			"Chesspiece":
 				path = path+"effects/move/"
-				name_ = pas_.word.chesspiece+name_
+				name_ = obj.pas.word.chesspiece+name_
 			"Layer":
 				path = path+"layers/square/"
-				name_ = str(pas_.num.layer)+name_
-			"Skill":
-				pass
+				name_ = str(obj.pas.num.layer)+name_
+			"Exam":
+				path = path+"exams/"
+				name_ = obj.exam.word.name+name_
 			"Border":
 				path = path+"cards/"
-				name_ = pas_.word.border+name_
+				name_ = obj.card.word.border+name_
 		
 		var texture = ImageTexture.new()
 		var image = Image.new()
@@ -41,17 +44,17 @@ func get_size():
 	return size
 
 func _on_Card_mouse_entered():
-	if obj.pas.word.border == "access":
+	if obj.card.word.border == "access":
 		scale = Vector2(Global.num.card.zoom,Global.num.card.zoom)
 
 func _on_Card_mouse_exited():
-	if obj.pas.word.border == "access":
+	if obj.card.word.border == "access":
 		scale = Vector2(1,1)
 
 func _on_Card_input_event(viewport, event, shape_idx):
 	if (event is InputEventMouseButton && event.pressed):
-		if obj.pas.word.border == "access":
-			Global.obj.easel.obj.current.pas = obj.pas
+		if obj.card.word.border == "access":
+			Global.current.pas = obj.pas
 			Global.set_square_layer(obj.pas.num.layer)
 			Global.obj.ballroom.get_dots_by_pas()
-			Global.obj.ballroom.obj.current.dot = null
+			Global.current.dot = null

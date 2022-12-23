@@ -26,7 +26,7 @@ offset = Vector2( -16, -20 )
 texture = ExtResource( 5 )
 offset = Vector2( 16, -20 )
 
-[node name="Skill" type="Sprite" parent="."]
+[node name="Exam" type="Sprite" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )

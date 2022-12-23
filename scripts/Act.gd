@@ -24,7 +24,7 @@ func set_sprites(act_):
 						name_ = act_.obj.effect.word.content+name_
 					"move":
 						path += act_.obj.effect.word.content+"/"
-						name_ = act_.obj.pas.word.chesspiece+name_
+						name_ = act_.obj.card.obj.pas.word.chesspiece+name_
 		
 		var texture = ImageTexture.new()
 		var image = Image.new()

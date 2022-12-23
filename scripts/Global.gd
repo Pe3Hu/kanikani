@@ -11,6 +11,7 @@ var flag = {}
 var vec = {}
 var color = {}
 var scene = {}
+var current = {}
 
 func init_num():
 	init_primary_key()
@@ -53,9 +54,6 @@ func init_num():
 	
 	num.card = {}
 	num.card.zoom = 1.2
-	
-	num.rest = {}
-	num.rest.start = 2
 	
 	dict.r = {
 		"circle": [num.ballroom.a]
@@ -104,8 +102,8 @@ func init_dict():
 	
 	dict.effect = {}
 	dict.effect.cast = ["stream","splash"]
-	dict.effect.content = ["hitch","rotate","move","skill","rest"]
-	dict.effect.skill = ["damage","heal","instigate","buff","debuff","summon"]
+	dict.effect.content = ["hitch","rotate","move","exam","rest"]
+	dict.effect.exam = ["damage","heal","instigate","buff","debuff","summon"]
 	
 	dict.feature = {}
 	dict.feature.base = {
@@ -114,12 +112,16 @@ func init_dict():
 			"resource": 100,
 			"rotate": 0.5,
 			"move": 100,
-			"irritant": 1
+			"irritant": 1,
+			"hitch": 0,
+			"rest": 1
 		},
 		"mob": {
 			"health": 1000,
 			"rotate": 1,
-			"move": 1
+			"move": 1,
+			"hitch": 0,
+			"rest": 2
 		}
 	}
 	
@@ -127,6 +129,12 @@ func init_dict():
 	dict.dancer.exam = {
 		"champion_0": ["exam_0"],
 		"mob_0": ["exam_1000"]
+	}
+	
+	dict.team = {}
+	dict.team.name = {
+		"champion" : ["champion_0"],
+		"mob" : ["mob_0"]
 	}
 	
 
@@ -169,10 +177,10 @@ func init_arr():
 	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
 	arr.pas = ["left rotate","right rotate","move forward"]
 	arr.cord = ["slow","standart","fast"]
-	arr.act = ["hitch","rotate","move","skill","rest"]
+	arr.act = ["hitch","rotate","move","exam","rest"]
 	
 	arr.sprite = {}
-	arr.sprite.card = ["Chesspiece","Layer","Skill","Border"]
+	arr.sprite.card = ["Chesspiece","Layer","Exam","Border"]
 	arr.sprite.act = ["Dancer","Effect","Narrow"]
 
 func init_scene():
@@ -208,14 +216,19 @@ func init_vec():
 	vec.pas.size = Vector2(num.ballroom.a*3,num.ballroom.a)
 	vec.pas.offset = Vector2(0,num.pas.offset+vec.pas.size.y/2)
 	
-	vec.card = {}
-	vec.card.size = null
-	
 	vec.hand = {}
 	vec.hand.offset = Vector2(num.border.gap+num.space.l/2, dict.window_size.height-num.border.gap)
 	
 	vec.timeflow = {}
 	vec.timeflow.offset = Vector2(num.border.gap, dict.window_size.height-num.border.gap*2)
+	
+	var temp_card = scene.card.instance()
+	vec.card = {}
+	vec.card.size = temp_card.get_size()
+	vec.hand.offset.y -= vec.card.size.y/2*Global.num.card.zoom
+	vec.hand.offset.x += vec.card.size.x/2*Global.num.card.zoom
+	vec.timeflow.offset.y -= vec.card.size.y*Global.num.card.zoom
+	temp_card.queue_free()
 	
 	vec.cord = {}
 	vec.cord.size = Vector2(num.space.l,num.ballroom.a)
@@ -250,6 +263,11 @@ func init_font():
 		dict.font[name].font_data = load(path)
 		dict.font[name].size = num.pas.label
 
+func init_current():
+	current.dot = null
+	current.dancer = null
+	current.pas = null
+
 func _ready():
 	init_dict()
 	init_arr()
@@ -260,6 +278,7 @@ func _ready():
 	init_vec()
 	init_color()
 	init_font()
+	init_current()
 
 func set_square_layer(layer_):
 	if layer_ == null:

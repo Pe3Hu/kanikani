@@ -40,8 +40,10 @@ class Effect:
 				var step = float(min(num.value.current,d))
 				obj.object.move_by(step)
 			"exam":
-				obj.object.check_examinees()
-				#obj.object.obj.ballroom.arr.exam.erase(obj.object)
+				obj.subject.check_examinees()
+			"rest":
+				Global.current.dancer = obj.subject
+				Global.obj.easel.next_action()
 
 class Act:
 	var num = {}
@@ -58,7 +60,7 @@ class Act:
 		obj.effect.obj.act = self
 		obj.effect.num.time = input_.time
 		obj.timeflow = input_.timeflow
-		obj.pas = input_.pas
+		obj.card = input_.card
 		num.begin = input_.begin
 		num.end = input_.end
 		num.time = input_.time
@@ -140,7 +142,7 @@ class Cord:
 		
 		var end = data_.end-obj.timeflow.num.time.current
 		var x = obj.timeflow.num.begin+end*Global.num.dent.x
-		data_.position = Vector2(x,num.y)#
+		data_.position = Vector2(x,num.y)
 		data_.cord = self
 		data_.timeflow = obj.timeflow
 		var act = Classes_3.Act.new(data_)
@@ -182,7 +184,7 @@ class Timeflow:
 		num.shift = Global.num.dent.x
 		arr.timeline = []
 		flag.narrow = false
-		flag.stop = true
+		flag.stop = false
 		init_cords()
 		init_dents()
 		launch_mobs()
@@ -255,7 +257,6 @@ class Timeflow:
 		return act
 
 	func add_pause(data_):
-		#print("new pause ",data_.time)
 		data_.begin = num.time.current+data_.delay
 		data_.end = num.time.current+data_.time+data_.delay
 		dict.cord[data_.cord].add_act(data_)
@@ -278,23 +279,24 @@ class Timeflow:
 				timeline.act.flag.temp = false
 
 	func launch_mobs():
-		var team = "mob"
-		var dancer = Global.obj.ballroom.dict.troupe[team].arr.dancer.front()
-		var input = {}
-		input.value = null
-		input.cast = "splash"
-		input.content = "rest"
-		input.subject = dancer
-		input.object = dancer
+		for team in Global.obj.ballroom.dict.troupe.keys():
+			for dancer in Global.obj.ballroom.dict.troupe[team].arr.dancer:
+				var input = {}
+				input.value = null
+				input.cast = "splash"
+				input.content = "rest"
+				input.subject = dancer
+				input.object = dancer
+				
+				var data = {}
+				data.dancer = dancer
+				data.card = null
+				data.effect = Classes_3.Effect.new(input)
+				data.time = dancer.obj.feature.dict["rest"].current
+				data.delay = 0
+				data.cord = "standart"
+				add_pause(data)
 		
-		var data = {}
-		data.dancer = dancer
-		data.pas = null
-		data.effect = Classes_3.Effect.new(input)
-		data.time = Global.num.rest.start
-		data.delay = 0
-		data.cord = "standart"
-		add_pause(data)
 		fix_temp()
 
 	func mob_choise():

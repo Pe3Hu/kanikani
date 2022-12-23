@@ -83,14 +83,14 @@ class Square:
 			obj.ballroom.dict.position[input.position].arr.n.append(arr.n.front())
 
 class Zone:
-	var num = {}
 	var word = {}
 	var arr = {}
+	var vec = {}
 	var obj = {}
 	var color = {}
 
 	func _init(input_):
-		num.r = input_.r
+		vec.size = input_.vector
 		word.type = input_.type
 		word.target = input_.target
 		arr.vertex = []
@@ -113,7 +113,7 @@ class Zone:
 		match word.type:
 			"circle":
 				var d = arr.vertex.front().distance_to(examine_.vec.position)
-				inside = d <= num.r
+				inside = d <= vec.size.x
 		
 		match type_:
 			"inside":
@@ -176,11 +176,13 @@ class Exam:
 		word.name = input_.name
 		obj.examiner = input_.examiner
 		obj.ballroom = obj.examiner.obj.troupe.obj.ballroom
-		set_descriptions(input_.description)
+		obj.card = null
 
-	func set_descriptions(description_):
-		for key in description_.keys():
-			var data = description_[key]
+	func set_descriptions():
+		var description = Global.dict.exam.description[word.name]
+		
+		for key in description.keys():
+			var data = description[key]
 			
 			match key:
 				"examinees":
@@ -193,41 +195,40 @@ class Exam:
 					set_penalty(data)
 
 	func set_examinees(data_):
-		var opponent = obj.ballroom.dict.troupe[Global.dict.opponent[obj.examiner.obj.troupe.word.team]].arr.dancer
+		var team = obj.examiner.obj.troupe.word.team
+		var opponent = obj.ballroom.dict.troupe[Global.dict.opponent[team]].arr.dancer
 		arr.examinee = []
 		
 		match data_["target"]:
 			"all":
-				dancers.append_array(opponent)
-		
-		arr.examinee.append_array(dancers)
+				arr.examinee.append_array(opponent)
 
 	func set_challenge(data_):
 		var input = {}
 		input.exam = self
 		
 		for key in data_.keys():
-			input[key] = data_[key_]
+			input[key] = data_[key]
 		
 		obj.challenge = Classes_1.Challenge.new(input)
 
-	func set_zones(data):
+	func set_zones(data_):
 		arr.zone = []
 		var input = {}
 		input.exam = self
 		
 		for key in data_.keys():
-			input[key] = data_[key_]
+			input[key] = data_[key]
 		
 		var zone = Classes_1.Zone.new(input)
 		arr.zone.append(zone)
 
-	func set_penalty(data):
+	func set_penalty(data_):
 		var input = {}
 		input.exam = self
 		
 		for key in data_.keys():
-			input[key] = data_[key_]
+			input[key] = data_[key]
 		
 		obj.penalty = Classes_1.Penalty.new(input)
 
@@ -262,11 +263,13 @@ class Dancer:
 		obj.ballroom = obj.troupe.obj.ballroom
 		init_feature()
 		init_scenes()
+		init_exams()
+		init_pass()
 		set_color()
-		arr.exam = []
 		vec.eye = Vector2(1,0)
 		num.angle = {}
 		num.angle.current = 0
+		num.angle.target = 0
 		num.angle.target = 0
 
 	func init_scenes():
@@ -300,9 +303,36 @@ class Dancer:
 		vec.position = position_
 		scene.dancer.map.position = vec.position
 
-	func add_exam(exam_):
+	func init_pass():
+		arr.pas = []
+		
+		for chesspiece in Global.arr.chesspiece:
+			var input = {}
+			input.chesspiece = chesspiece
+			input.layer = Global.get_random_element(Global.arr.pas_layer)
+			input.easel = self
+			var pas = Classes_2.Pas.new(input)
+			arr.pas.append(pas)
+		
 		var input = {}
-		arr.exam.append(exam_)
+		input.chesspiece = "king"
+		input.layer = 12
+		input.easel = self
+		var pas = Classes_2.Pas.new(input)
+		arr.pas.append(pas)
+
+	func init_exams():
+		arr.exam = []
+	
+		for name_ in Global.dict.dancer.exam[word.name]:
+			add_exam(name_)
+
+	func add_exam(name_):
+		var input = {}
+		input.examiner = self
+		input.name = name_
+		var exam = Classes_1.Exam.new(input)
+		arr.exam.append(exam)
 
 	func shift(step_):
 		set_position(obj.troupe.obj.ballroom.limit_step(vec.position,step_))
@@ -356,12 +386,12 @@ class Dancer:
 		Global.obj.timeflow.clean_temp()
 		obj.ballroom.find_nearest_dot(position_)
 		
-		if obj.ballroom.obj.current.dot != null:
-			if obj.ballroom.arr.end.has(obj.ballroom.obj.current.dot):
-				Global.obj.easel.obj.current.pas.obj.dot = obj.ballroom.obj.current.dot
-				Global.obj.easel.obj.current.pas.preuse()
+		if Global.current.dot != null:
+			if obj.ballroom.arr.end.has(Global.current.dot):
+				Global.current.pas.obj.dot = Global.current.dot
+				Global.obj.easel.preuse_card()
 			else:
-				obj.ballroom.obj.current.dot = null
+				Global.current.dot = null
 
 	func get_damage(damage_):
 		obj.feature.dict["health"].current -= damage_
@@ -395,7 +425,7 @@ class Troupe:
 		arr.dancer = []
 		
 		var input = {}
-		input.hp = 100
+		input.name = Global.get_random_element(Global.dict.team.name[word.team])
 		input.troupe = self
 		var dancer = Classes_1.Dancer.new(input)
 		arr.dancer.append(dancer)
