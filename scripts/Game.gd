@@ -2,7 +2,6 @@ extends Node
 
 
 func _ready():
-#	datas.sort_custom(Sorter, "sort_ascending")
 	Global.obj.ballroom = Classes_0.Ballroom.new()
 	Global.obj.easel = Classes_2.Easel.new()
 	Global.obj.timeflow = Classes_3.Timeflow.new()

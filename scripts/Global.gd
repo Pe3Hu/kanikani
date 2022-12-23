@@ -245,6 +245,9 @@ func init_vec():
 	vec.mob.offset = Vector2(vec.ballroom.offset.x-vec.dancer.ui.x+num.border.gap,num.border.gap)
 	vec.mob.current = vec.mob.offset
 	
+	vec.sprite = {}
+	vec.sprite.size = Vector2(32,32)
+	
 
 func init_color():
 	color.cord = {

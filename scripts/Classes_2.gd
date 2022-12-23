@@ -137,24 +137,25 @@ class Card:
 			var data = {}
 			data.time = 0
 			
+			if content != "exam":
+				input.value = obj.dancer.obj.feature.dict[content].current
+			
 			match content:
 				"rest":
-					data.time = obj.dancer.num.time.hitch
+					data.time = input.value
 				"rotate":
 					obj.dancer.get_angle_by_target(obj.pas.obj.dot)
 					
 					if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
-						input.value = obj.dancer.obj.feature.dict["rotate"].current
 						input.cast = "stream"
 						data.time = obj.dancer.get_time_for_rotate()
 				"move":
 					input.cast = "stream"
-					input.value = obj.dancer.obj.feature.dict["move"].current
 					data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
 				"exam":
-					data.time = obj.exam.obj.challenge["preparation"]
+					data.time = obj.exam.obj.challenge.num.preparation.max
 				"rest":
-					data.time = obj.dancer.num.time.rest
+					data.time = input.value
 			
 			if data.time > 0:
 				data.dancer = obj.dancer

@@ -25,6 +25,10 @@ func set_sprites(act_):
 					"move":
 						path += act_.obj.effect.word.content+"/"
 						name_ = act_.obj.card.obj.pas.word.chesspiece+name_
+					"exam":
+						var team = act_.obj.dancer.obj.troupe.word.team
+						path += act_.obj.effect.word.content+"/"+team+"/"
+						name_ = act_.obj.card.obj.exam.word.name+name_
 					"hitch":
 						name_ = act_.obj.effect.word.content+name_
 					"rest":
@@ -40,3 +44,8 @@ func switch_narrow():
 	for key in Global.arr.sprite.act:
 		var sprite = get_node(key)
 		sprite.visible = !sprite.visible
+
+func effect_reposition():
+		var sprite = get_node("Effect")
+		sprite.position.x = Global.vec.sprite.size.x/2
+	

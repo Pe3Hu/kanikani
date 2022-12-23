@@ -65,7 +65,7 @@ class Act:
 		num.end = input_.end
 		num.time = input_.time
 		vec.position = input_.position
-		vec.shifted = input_.position
+		vec.bias = input_.position
 		num.r = Global.num.ballroom.a/4
 		color.current = Color.white
 		flag.temp = true
@@ -79,6 +79,9 @@ class Act:
 		
 		if !obj.timeflow.flag.narrow:
 			scene.act.switch_narrow()
+		
+		if obj.effect.word.content == "exam":
+			scene.act.effect_reposition()
 
 	func shift(vec_):
 		vec.position.x += vec_.x
@@ -155,6 +158,34 @@ class Cord:
 		data.value = data_.end
 		data.act = act
 		obj.timeflow.arr.timeline.append(data)
+
+	func update_bias():
+		var datas = []
+		var x = Global.vec.sprite.size.x
+		
+		for pause in dict.pause.keys():
+			for act in dict.pause[pause]:
+				var data = {}
+				data.act = act
+				data.x = act.vec.position.x
+				data.bias = 2*x
+				data.value = data.x
+				
+				if data.act.obj.effect.word.content == "exam":
+					data.bias += x
+				
+				datas.append(data)
+		
+		datas.sort_custom(Classes_0.Sorter, "sort_ascending")
+		
+		for _i in range(1,datas.size(),1):
+			var _j = _i-1
+			
+			if datas[_i].x-datas[_j].x < datas[_i].bias:
+				datas[_i].x = datas[_j].x+datas[_j].bias
+			
+		for data in datas:
+			data.act.vec.bias = Vector2(data.x,data.act.vec.position.y)
 
 class Dent:
 	var num = {}
@@ -268,8 +299,17 @@ class Timeflow:
 	func shift_act_sprites():
 		flag.narrow = !flag.narrow
 		
+		for kye in dict.cord.keys():
+			var cord = dict.cord[kye]
+			cord.update_bias()
+			
 		for timeline in arr.timeline:
 			timeline.act.scene.act.switch_narrow()
+			
+			if flag.narrow:
+				timeline.act.scene.act.position = timeline.act.vec.position
+			else:
+				timeline.act.scene.act.position = timeline.act.vec.bias
 
 	func clean_temp():
 		for timeline in arr.timeline:

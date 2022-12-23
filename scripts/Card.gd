@@ -24,7 +24,8 @@ func set_spirtes(data_):
 				path = path+"layers/square/"
 				name_ = str(obj.pas.num.layer)+name_
 			"Exam":
-				path = path+"exams/"
+				var team = obj.card.obj.dancer.obj.troupe.word.team
+				path = path+"effects/exam/"+team+"/"
 				name_ = obj.exam.word.name+name_
 			"Border":
 				path = path+"cards/"
@@ -38,9 +39,9 @@ func set_spirtes(data_):
 
 func get_size():
 	#var size = get_node("CollisionShape2D").position*2*scale
-	var size = Vector2(80,120)
 	var shape = get_node("CollisionShape2D").get_shape()
-	print(shape)
+	var size = shape.extents*2
+	print(size)
 	return size
 
 func _on_Card_mouse_entered():
