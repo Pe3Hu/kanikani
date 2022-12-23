@@ -28,13 +28,13 @@ func _input(event):
 			Global.set_square_layer(null)
 		if event.pressed and event.scancode == KEY_Q:
 			Global.obj.timeflow.flag.stop = !Global.obj.timeflow.flag.stop
-		if event.pressed and event.scancode == KEY_E:
-			 Global.obj.easel.preuse_card()
 		if event.pressed and event.scancode == KEY_A:
 			 Global.obj.timeflow.fix_temp()
 			
 		if event.pressed and event.scancode == KEY_1:
 			Global.node.Hand.visible = !Global.node.Hand.visible
+		if event.pressed and event.scancode == KEY_2:
+			Global.obj.timeflow.shift_act_sprites()
 
 func _process(delta):
 	if Global.obj.keys().has("timeflow"):

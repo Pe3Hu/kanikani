@@ -90,6 +90,7 @@ class Zone:
 	var color = {}
 
 	func _init(input_):
+		vec.distance = input_.distance
 		vec.size = input_.vector
 		word.type = input_.type
 		word.target = input_.target
@@ -151,9 +152,9 @@ class Challenge:
 	var obj = {}
 
 	func _init(input_):
-		num.time = {}
-		num.time.max = input_.delay
-		num.time.current = 0
+		num.preparation = {}
+		num.preparation.max = input_.preparation
+		num.preparation.current = 0
 		word.type = input_.type
 		obj.exam = input_.exam
 
@@ -270,7 +271,9 @@ class Dancer:
 		num.angle = {}
 		num.angle.current = 0
 		num.angle.target = 0
-		num.angle.target = 0
+		num.time = {}
+		num.time.hitch = 0
+		num.time.rest = 0
 
 	func init_scenes():
 		scene.dancer = {}

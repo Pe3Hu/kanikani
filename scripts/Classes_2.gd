@@ -125,41 +125,54 @@ class Card:
 		word.border = ""
 
 	func preuse():
-		obj.dancer.get_angle_by_target(obj.pas.obj.dot)
+		var delay = 0
 		
-		if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
+		for content in Global.dict.effect.content:
 			var input = {}
-			input.value = obj.dancer.obj.feature.dict["rotate"].current
-			input.cast = "stream"
-			input.content = "rotate"
+			input.value = null
+			input.content = content
 			input.subject = obj.dancer
 			input.object = obj.dancer
-			
+			input.cast = "splash"
 			var data = {}
-			data.dancer = obj.dancer
-			data.card = self
-			data.effect = Classes_3.Effect.new(input)
-			data.time = obj.dancer.get_time_for_rotate()
-			data.delay = 0
-			data.cord = "standart"
-			Global.obj.timeflow.add_pause(data)
+			data.time = 0
 			
-			input.value = obj.dancer.obj.feature.dict["move"].current
-			input.content = "move"
-			data.effect = Classes_3.Effect.new(input)
-			data.delay = data.time
-			data.cord = "standart"
-			data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
-			Global.obj.timeflow.add_pause(data)
+			match content:
+				"rest":
+					data.time = obj.dancer.num.time.hitch
+				"rotate":
+					obj.dancer.get_angle_by_target(obj.pas.obj.dot)
+					
+					if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
+						input.value = obj.dancer.obj.feature.dict["rotate"].current
+						input.cast = "stream"
+						data.time = obj.dancer.get_time_for_rotate()
+				"move":
+					input.cast = "stream"
+					input.value = obj.dancer.obj.feature.dict["move"].current
+					data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
+				"exam":
+					data.time = obj.exam.obj.challenge["preparation"]
+				"rest":
+					data.time = obj.dancer.num.time.rest
 			
-			var ends = []
-			ends.append_array(Global.obj.ballroom.arr.end)
-			Global.obj.ballroom.arr.end = []
+			if data.time > 0:
+				data.dancer = obj.dancer
+				data.card = self
+				data.effect = Classes_3.Effect.new(input)
+				data.delay = delay
+				data.cord = "standart"
+				Global.obj.timeflow.add_pause(data)
+				delay += data.time
 			
-			for end in ends:
-				end.update_color()
-				
-			Global.current.dot = null
+		var ends = []
+		ends.append_array(Global.obj.ballroom.arr.end)
+		Global.obj.ballroom.arr.end = []
+		
+		for end in ends:
+			end.update_color()
+			
+		Global.current.dot = null
 
 	func check_access():
 		if Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer.has(obj.pas.num.layer):

@@ -65,6 +65,7 @@ class Act:
 		num.end = input_.end
 		num.time = input_.time
 		vec.position = input_.position
+		vec.shifted = input_.position
 		num.r = Global.num.ballroom.a/4
 		color.current = Color.white
 		flag.temp = true
@@ -75,6 +76,9 @@ class Act:
 		Global.node.Acts.add_child(scene.act)
 		scene.act.position = vec.position
 		scene.act.set_sprites(self)
+		
+		if !obj.timeflow.flag.narrow:
+			scene.act.switch_narrow()
 
 	func shift(vec_):
 		vec.position.x += vec_.x
@@ -183,7 +187,7 @@ class Timeflow:
 		num.time.current = 0
 		num.shift = Global.num.dent.x
 		arr.timeline = []
-		flag.narrow = false
+		flag.narrow = true
 		flag.stop = false
 		init_cords()
 		init_dents()
@@ -265,8 +269,7 @@ class Timeflow:
 		flag.narrow = !flag.narrow
 		
 		for timeline in arr.timeline:
-			if flag.narrow:
-				timeline.act.switch_narrow()
+			timeline.act.scene.act.switch_narrow()
 
 	func clean_temp():
 		for timeline in arr.timeline:

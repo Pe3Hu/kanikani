@@ -9,15 +9,14 @@ func _ready():
 				"target": "boss"
 			},
 			"challenge": {
-				"delay": 1,
+				"preparation": 1,
 				"type": "claim 0",
 			},
 			"zone": {
 				"type": "homing",
 				"target": "max health",
 				"vector": Vector2(0,0),
-				"min distance": 2,
-				"max distance": 20,
+				"distance": Vector2(2,20),
 			},
 			"penalty": {
 				"effect": "instantaneous",
@@ -30,15 +29,14 @@ func _ready():
 				"target": "all"
 			},
 			"challenge": {
-				"delay": 3,
+				"preparation": 3,
 				"type": "outside",
 			},
 			"zone": {
 				"type": "circle",
 				"target": "max health",
 				"vector": Vector2(Global.num.ballroom.a,0),
-				"min distance": 0,
-				"max distance": 22,
+				"distance": Vector2(0,22),
 			},
 			"penalty": {
 				"effect": "instantaneous",
