@@ -24,11 +24,11 @@ class Pas:
 			arr.vertex.append(vertex)
 
 	func get_ends():
-		var dancer = Global.obj.ballroom.obj.current.dancer
-		var ends = []
+		var dancer = Global.current.dancer
+		var start = dancer.obj.dot
+		var ends = [start]
 		
 		if dancer != null:
-			var start = dancer.obj.dot
 			var windroses = start.dict.neighbor[Global.num.layer.square]
 			#rint(eye,dancer.num.angle.current,windroses)
 			
@@ -66,6 +66,11 @@ class Pas:
 							if windrose.length() == 2:
 								var dots = get_dots_knight(start,windrose)
 								ends.append_array(dots)
+					"cat":
+						for dots in Global.obj.ballroom.arr.dot:
+							for dot in dots:
+								if dot.obj.dancer == null:
+									ends.append(dot)
 								
 		return ends
 
@@ -109,6 +114,10 @@ class Pas:
 		else:
 			return []
 
+	func aim():
+		var goal = obj.card.obj.exam.get_goal()
+		obj.pas.dot = Global.obj.ballroom.find_nearest_dot(goal)
+		obj.card.obj.exam.obj.zone.set_vertexs()
 
 class Card:
 	var obj = {}
@@ -116,13 +125,15 @@ class Card:
 	var word = {}
 
 	func _init(input_):
+		word.border = ""
+		scene.card = null
 		obj.dancer = input_.dancer
-		obj.pas = input_.pas
-		obj.pas.obj.card = self
 		obj.exam = input_.exam
 		obj.exam.obj.card = self
-		scene.card = null
-		word.border = ""
+		obj.pas = input_.pas
+		
+		if obj.pas != null:
+			obj.pas.obj.card = self
 
 	func preuse():
 		var delay = 0
@@ -144,14 +155,16 @@ class Card:
 				"rest":
 					data.time = input.value
 				"rotate":
-					obj.dancer.get_angle_by_target(obj.pas.obj.dot)
-					
-					if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
-						input.cast = "stream"
-						data.time = obj.dancer.get_time_for_rotate()
+					if obj.pas.obj.dot != obj.dancer.obj.dot:
+						obj.dancer.get_angle_by_target(obj.pas.obj.dot)
+						
+						if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
+							input.cast = "stream"
+							data.time = obj.dancer.get_time_for_rotate()
 				"move":
-					input.cast = "stream"
-					data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
+					if obj.pas.obj.dot != obj.dancer.obj.dot:
+						input.cast = "stream"
+						data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
 				"exam":
 					data.time = obj.exam.obj.challenge.num.preparation.max
 				"rest":
@@ -176,10 +189,16 @@ class Card:
 		Global.current.dot = null
 
 	func check_access():
-		if Global.obj.ballroom.obj.current.dancer.obj.dot.arr.layer.has(obj.pas.num.layer):
-			word.border = "access"
-		else:
-			word.border = "denied"
+		var team =  obj.dancer.obj.troupe.word.team
+		
+		match team:
+			"champion":
+				if obj.dancer.obj.dot.arr.layer.has(obj.pas.num.layer):
+					word.border = "access"
+				else:
+					word.border = "denied"
+			"mob":
+				word.border = "access"
 
 class Easel:
 	var num = {}
@@ -187,48 +206,47 @@ class Easel:
 	var vec = {}
 	var flag = {}
 	var dict = {}
-	var obj = {}
 	var color = {}
 
 	func _init():
-		obj.current = {}
-		obj.current.pas = null
+		arr.hand = []
 
 	func next_action():
-		var team = Global.obj.ballroom.obj.current.dancer.obj.troupe.word.team
-		
-		match team:
-			"champion":
-				fill_hand()
-			"mob":
-				mob_action()
+		var team = Global.current.dancer.obj.troupe.word.team
+		fill_hand()
 
 	func fill_hand():
 		arr.hand = []
 		
-		var dancer = Global.obj.ballroom.obj.current.dancer
-		var n = 4
+		var dancer = Global.current.dancer
+		var team = dancer.obj.troupe.word.team
 		var options = {}
 		options.pas = []
 		options.exam = []
+		var n = 4
+		
+		if team == "mob":
+			n = 1
 		
 		for _i in n:
 			options.pas.append(Global.get_random_element(dancer.arr.pas))
 			options.exam.append(Global.get_random_element(dancer.arr.exam))
 		
-		var pas = null
-		
-		for pas_ in dancer.arr.pas:
-			if pas_.num.layer == 12 && pas_.word.chesspiece == "king":
-				pas = pas_
-		
-		if !options.pas.has(pas):
-			options.pas.pop_front()
-			options.pas.append(pas)
+		if team == "champion":
+			var pas = null
+			
+			for pas_ in dancer.arr.pas:
+				if pas_.num.layer == 12 && pas_.word.chesspiece == "king":
+					pas = pas_
+			
+			if !options.pas.has(pas):
+				options.pas.pop_front()
+				options.pas.append(pas)
 		
 		for _i in n:
 			var data = {}
 			data.dancer = dancer
+			data.temp = team == "mob"
 			Global.rng.randomize()
 			var index_r = Global.rng.randi_range(0, options.pas.size()-1)
 			data.pas = options.pas.pop_at(index_r)
@@ -237,8 +255,15 @@ class Easel:
 			data.exam = options.exam.pop_at(index_r)
 			add_card(data)
 		
-		update_hand()
-		Global.obj.timeflow.flag.stop = true
+		if team == "champion":
+			update_hand()
+			Global.obj.timeflow.flag.stop = true
+		else:
+			discard_dinieds()
+			var card = Global.get_random_element(arr.hand)
+			card.obj.pas.obj.dot = dancer.obj.dot
+			card.preuse()
+			Global.obj.timeflow.fix_temp()
 
 	func update_hand():
 		var card_gap = Global.vec.card.size.x*Global.num.card.zoom
@@ -254,13 +279,17 @@ class Easel:
 		arr.hand.append(card)
 		card.scene.card = Global.scene.card.instance()
 		card.check_access()
-		card.scene.card.set_spirtes(card)
-		Global.node.Hand.add_child(card.scene.card)
+		
+		if !data_.temp:
+			card.scene.card.set_spirtes(card)
+			Global.node.Hand.add_child(card.scene.card)
 
 	func preuse_card():
 		if Global.current.pas != null:
 			if Global.current.pas.obj.dot != null:
 				Global.current.pas.obj.card.preuse()
 
-	func mob_action():
-		pass
+	func discard_dinieds():
+		for card in arr.hand:
+			if card.word.border == "denied":
+				arr.hand.erase(card)

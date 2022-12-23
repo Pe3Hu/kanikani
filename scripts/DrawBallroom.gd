@@ -19,8 +19,8 @@ func _draw():
 #					"circle":
 #						draw_circle(zone.arr.vertex.front(), zone.num.r, zone.color.background)
 		
-		if Global.obj.ballroom.obj.current.dot:
-			draw_circle_arc(Global.obj.ballroom.obj.current.dot.vec.position, Global.num.dot.a*1.5, 0, 360, Color.black)
+		if Global.current.dot:
+			draw_circle_arc(Global.current.dot.vec.position, Global.num.dot.a*1.5, 0, 360, Color.black)
 			
 
 func draw_circle_arc(center, radius, angle_from, angle_to, color):

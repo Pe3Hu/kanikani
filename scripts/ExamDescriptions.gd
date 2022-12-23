@@ -6,7 +6,8 @@ func _ready():
 	Global.dict.exam.description = {
 		"exam_0": {
 			"examinees": {
-				"target": "boss"
+				"main": "max health",
+				"secondary": ""
 			},
 			"challenge": {
 				"preparation": 1,
@@ -14,7 +15,6 @@ func _ready():
 			},
 			"zone": {
 				"type": "homing",
-				"target": "max health",
 				"vector": Vector2(0,0),
 				"distance": Vector2(2,20),
 			},
@@ -26,7 +26,8 @@ func _ready():
 		},
 		"exam_1000": {
 			"examinees": {
-				"target": "all"
+				"main": "max health",
+				"secondary": "all"
 			},
 			"challenge": {
 				"preparation": 3,
@@ -34,7 +35,6 @@ func _ready():
 			},
 			"zone": {
 				"type": "circle",
-				"target": "max health",
 				"vector": Vector2(Global.num.ballroom.a,0),
 				"distance": Vector2(0,22),
 			},

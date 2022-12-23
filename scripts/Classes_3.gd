@@ -36,11 +36,11 @@ class Effect:
 				var step = float(min(num.value.current,abs(angle)))*sign(angle)
 				obj.object.rotate_by(step)
 			"move":
-				var d = obj.object.vec.position.distance_to(obj.act.obj.pas.obj.dot.vec.position)
+				var d = obj.object.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.value.current,d))
 				obj.object.move_by(step)
 			"exam":
-				obj.subject.check_examinees()
+				obj.act.obj.card.obj.exam.obj.challenge.check_examinees()
 			"rest":
 				Global.current.dancer = obj.subject
 				Global.obj.easel.next_action()
@@ -85,11 +85,15 @@ class Act:
 
 	func shift(vec_):
 		vec.position.x += vec_.x
+		vec.bias.x += vec_.x
 		
 		if vec.position.x <= obj.timeflow.num.begin:
 			vec.position.x = obj.timeflow.num.begin
 		
-		scene.act.position = vec.position
+		if obj.timeflow.flag.narrow:
+			scene.act.position = vec.position
+		else:
+			scene.act.position = vec.bias
 
 	func die():
 		if !flag.temp:
@@ -97,8 +101,9 @@ class Act:
 				obj.effect.apply()
 		
 			if obj.effect.word.content == "move":
-				obj.dancer.vec.position = obj.pas.obj.dot.vec.position
+				obj.dancer.vec.position = obj.card.obj.pas.obj.dot.vec.position
 				obj.dancer.set_dot()
+				obj.card.obj.pas.aim()
 		
 		obj.cord.dict.pause[num.end].erase(self)
 		
@@ -106,10 +111,11 @@ class Act:
 			scene.act.queue_free()
 			scene.act = null
 		
-		for _i in Global.obj.timeflow.arr.timeline.size():
+		for _i in range(Global.obj.timeflow.arr.timeline.size()-1,-1,-1):
 			if Global.obj.timeflow.arr.timeline[_i].act == self:
 				Global.obj.timeflow.arr.timeline.pop_at(_i)
-				break
+		
+		obj.cord.reposition()
 		
 		if Global.obj.timeflow.arr.timeline.size() == 0:
 			Global.obj.timeflow.flag.stop = true
@@ -158,6 +164,22 @@ class Cord:
 		data.value = data_.end
 		data.act = act
 		obj.timeflow.arr.timeline.append(data)
+		reposition()
+
+	func switch_narrow():
+		for pause in dict.pause.keys():
+			for act in dict.pause[pause]:
+				act.scene.act.switch_narrow()
+
+	func reposition():
+		update_bias()
+		
+		for pause in dict.pause.keys():
+			for act in dict.pause[pause]:
+				if obj.timeflow.flag.narrow:
+					act.scene.act.position = act.vec.position
+				else:
+					act.scene.act.position = act.vec.bias
 
 	func update_bias():
 		var datas = []
@@ -301,20 +323,15 @@ class Timeflow:
 		
 		for kye in dict.cord.keys():
 			var cord = dict.cord[kye]
-			cord.update_bias()
-			
-		for timeline in arr.timeline:
-			timeline.act.scene.act.switch_narrow()
-			
-			if flag.narrow:
-				timeline.act.scene.act.position = timeline.act.vec.position
-			else:
-				timeline.act.scene.act.position = timeline.act.vec.bias
+			cord.switch_narrow()
+			cord.reposition()
 
 	func clean_temp():
-		for timeline in arr.timeline:
-			if timeline.act.flag.temp:
-				timeline.act.die()
+		for _i in range(arr.timeline.size()-1,-1,-1):
+			var act = arr.timeline[_i].act
+			
+			if act.flag.temp:
+				act.die()
 
 	func fix_temp():
 		for timeline in arr.timeline:
@@ -342,7 +359,3 @@ class Timeflow:
 		
 		fix_temp()
 
-	func mob_choise():
-		var team = "mob"
-		var dancer = Global.obj.ballroom.dict.troupe[team].arr.dancer.front()
-		dancer.get_exam()

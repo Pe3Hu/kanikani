@@ -7,7 +7,6 @@ class Ballroom:
 	var vec = {}
 	var flag = {}
 	var dict = {}
-	var obj = {}
 	var color = {}
 
 	func _init():
@@ -17,9 +16,6 @@ class Ballroom:
 		init_squares()
 		init_rombs()
 		init_troupes()
-		obj.current = {}
-		obj.current.dot = null
-		obj.current.dancer = dict.troupe["champion"].arr.dancer.front()
 		color.background = Color.gray
 
 	func init_dots():

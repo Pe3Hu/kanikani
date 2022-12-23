@@ -38,10 +38,8 @@ func set_spirtes(data_):
 		sprite.texture = texture
 
 func get_size():
-	#var size = get_node("CollisionShape2D").position*2*scale
 	var shape = get_node("CollisionShape2D").get_shape()
 	var size = shape.extents*2
-	print(size)
 	return size
 
 func _on_Card_mouse_entered():

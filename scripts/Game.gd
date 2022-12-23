@@ -2,6 +2,7 @@ extends Node
 
 
 func _ready():
+	#datas.sort_custom(Classes_0.Sorter, "sort_ascending")
 	Global.obj.ballroom = Classes_0.Ballroom.new()
 	Global.obj.easel = Classes_2.Easel.new()
 	Global.obj.timeflow = Classes_3.Timeflow.new()
@@ -28,7 +29,8 @@ func _input(event):
 		if event.pressed and event.scancode == KEY_Q:
 			Global.obj.timeflow.flag.stop = !Global.obj.timeflow.flag.stop
 		if event.pressed and event.scancode == KEY_A:
-			 Global.obj.timeflow.fix_temp()
+			Global.obj.timeflow.fix_temp()
+			Global.obj.timeflow.flag.stop = false
 			
 		if event.pressed and event.scancode == KEY_1:
 			Global.node.Hand.visible = !Global.node.Hand.visible

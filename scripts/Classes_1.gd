@@ -93,20 +93,15 @@ class Zone:
 		vec.distance = input_.distance
 		vec.size = input_.vector
 		word.type = input_.type
-		word.target = input_.target
 		arr.vertex = []
 		obj.exam = input_.exam
 		color.background = Color.black
-		
-		set_vertexs()
 
 	func set_vertexs():
 		match word.type:
 			"circle":
-				match word.target:
-					"first":
-						var position = obj.exam.arr.examinee.front().vec.position
-						arr.vertex.append(position)
+				var position = obj.exam.obj.card.obj.pas.obj.dot.vec.position
+				arr.vertex.append(position)
 
 	func check_examine(examine_, type_):
 		var inside = null
@@ -159,11 +154,11 @@ class Challenge:
 		obj.exam = input_.exam
 
 	func check_examinees():
-		for examinee in obj.exam.arr.examinee:
+		for secondary in obj.exam.arr.secondary:
 			for zone in obj.exam.arr.zone:
-				if zone.check_examine(examinee,word.type):
-					if !obj.exam.obj.penalty.arr.dancer.has(examinee):
-						obj.exam.obj.penalty.arr.dancer.append(examinee)
+				if zone.check_examine(secondary,word.type):
+					if !obj.exam.obj.penalty.arr.dancer.has(secondary):
+						obj.exam.obj.penalty.arr.dancer.append(secondary)
 		
 		if obj.exam.obj.penalty.arr.dancer.size() > 0:
 			obj.exam.obj.penalty.punishment()
@@ -197,12 +192,13 @@ class Exam:
 
 	func set_examinees(data_):
 		var team = obj.examiner.obj.troupe.word.team
-		var opponent = obj.ballroom.dict.troupe[Global.dict.opponent[team]].arr.dancer
-		arr.examinee = []
+		var dancers = obj.ballroom.dict.troupe[Global.dict.opponent[team]].arr.dancer
 		
-		match data_["target"]:
-			"all":
-				arr.examinee.append_array(opponent)
+		for key in data_.keys():
+			arr[key] = []
+			var data = data_[key]
+			var arr_ = find_dancers(dancers,data)
+			arr[key].append_array(arr_)
 
 	func set_challenge(data_):
 		var input = {}
@@ -235,6 +231,35 @@ class Exam:
 
 	func end():
 		obj.ballroom.arr.exam.erase(self)
+
+	func find_dancers(dancers_,key_):
+		var dancers = []
+		
+		match key_:
+			"all":
+				return dancers_
+			"max health":
+				var datas = []
+				
+				for dancer in dancers_:
+					var data = {}
+					data.dancer = dancer
+					data.value = dancer.get_health()
+					datas.append(data)
+				
+				datas.sort_custom(Classes_0.Sorter, "sort_descending")
+				dancers.append(datas.front().dancer)
+		
+		return dancers
+
+	func get_goal():
+		var goal = Vector2()
+		
+		for main in arr.main:
+			goal += main.vec.position
+		
+		goal /= arr.main.size()
+		return goal
 
 class Feature:
 	var obj = {}
@@ -308,8 +333,9 @@ class Dancer:
 
 	func init_pass():
 		arr.pas = []
+		var team = obj.troupe.word.team
 		
-		for chesspiece in Global.arr.chesspiece:
+		for chesspiece in Global.dict.team.chesspiece[team]:
 			var input = {}
 			input.chesspiece = chesspiece
 			input.layer = Global.get_random_element(Global.arr.pas_layer)
@@ -317,12 +343,13 @@ class Dancer:
 			var pas = Classes_2.Pas.new(input)
 			arr.pas.append(pas)
 		
-		var input = {}
-		input.chesspiece = "king"
-		input.layer = 12
-		input.easel = self
-		var pas = Classes_2.Pas.new(input)
-		arr.pas.append(pas)
+		if team == "champion":
+			var input = {}
+			input.chesspiece = "king"
+			input.layer = 12
+			input.easel = self
+			var pas = Classes_2.Pas.new(input)
+			arr.pas.append(pas)
 
 	func init_exams():
 		arr.exam = []
@@ -406,11 +433,14 @@ class Dancer:
 	func update_health():
 		scene.dancer.ui.set_healt(self)
 
+	func get_health():
+		return obj.feature.dict["health"].current
+
 	func die():
 		obj.troupe.arr.dancer.erase(self)
 		
 		for exam in obj.troupe.obj.ballroom.arr.exam:
-			exam.arr.examinee.erase(self)
+			exam.arr.secondary.erase(self)
 		
 		scene.dancer.map.queue_free()
 
