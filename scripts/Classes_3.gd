@@ -14,19 +14,17 @@ class Effect:
 		word.content = input_.content
 		obj.subject = input_.subject
 		obj.object = input_.object
-		
-		match word.content:
-			"move":
-				obj.object.obj.dot.obj.dancer = null
-				obj.object.obj.dot = null
 
 	func update_value():
-		
 		match word.content:
 			"rotate":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
 			"move":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
+				
+				if obj.object.obj.dot != null:
+					obj.object.obj.dot.obj.dancer = null
+					obj.object.obj.dot = null
 
 	func apply():
 		update_value()
@@ -41,6 +39,9 @@ class Effect:
 				var d = obj.object.vec.position.distance_to(obj.act.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.value.current,d))
 				obj.object.move_by(step)
+			"exam":
+				obj.object.check_examinees()
+				#obj.object.obj.ballroom.arr.exam.erase(obj.object)
 
 class Act:
 	var num = {}
@@ -56,7 +57,7 @@ class Act:
 		obj.effect = input_.effect
 		obj.effect.obj.act = self
 		obj.effect.num.time = input_.time
-		obj.timeflow = Global.obj.timeflow
+		obj.timeflow = input_.timeflow
 		obj.pas = input_.pas
 		num.begin = input_.begin
 		num.end = input_.end
@@ -85,22 +86,22 @@ class Act:
 		if !flag.temp:
 			if obj.effect.word.cast == "splash":
 				obj.effect.apply()
-			
+		
 			if obj.effect.word.content == "move":
 				obj.dancer.vec.position = obj.pas.obj.dot.vec.position
 				obj.dancer.set_dot()
 		
-		var pause = obj.cord.dict.pause[num.end]
-		pause.erase(self)
+		obj.cord.dict.pause[num.end].erase(self)
 		
 		if scene.act != null:
 			scene.act.queue_free()
 			scene.act = null
 		
-		for timeline in Global.obj.timeflow.arr.timeline:
-			if timeline.act == self:
-				Global.obj.timeflow.arr.timeline.erase(self)
-			
+		for _i in Global.obj.timeflow.arr.timeline.size():
+			if Global.obj.timeflow.arr.timeline[_i].act == self:
+				Global.obj.timeflow.arr.timeline.pop_at(_i)
+				break
+		
 		if Global.obj.timeflow.arr.timeline.size() == 0:
 			Global.obj.timeflow.flag.stop = true
 
@@ -141,6 +142,7 @@ class Cord:
 		var x = obj.timeflow.num.begin+end*Global.num.dent.x
 		data_.position = Vector2(x,num.y)#
 		data_.cord = self
+		data_.timeflow = obj.timeflow
 		var act = Classes_3.Act.new(data_)
 		dict.pause[data_.end].append(act)
 		var data = {}
@@ -183,6 +185,7 @@ class Timeflow:
 		flag.stop = true
 		init_cords()
 		init_dents()
+		launch_mobs()
 
 	func init_cords():
 		dict.cord = {}
@@ -243,7 +246,6 @@ class Timeflow:
 				for timeline in arr.timeline:
 					if timeline.value == time:
 						timeline.act.die()
-						arr.timeline.erase(timeline)
 		else:
 			Global.flag.timeline = false
 
@@ -274,3 +276,28 @@ class Timeflow:
 		for timeline in arr.timeline:
 			if timeline.act.flag.temp:
 				timeline.act.flag.temp = false
+
+	func launch_mobs():
+		var team = "mob"
+		var dancer = Global.obj.ballroom.dict.troupe[team].arr.dancer.front()
+		var input = {}
+		input.value = null
+		input.cast = "splash"
+		input.content = "rest"
+		input.subject = dancer
+		input.object = dancer
+		
+		var data = {}
+		data.dancer = dancer
+		data.pas = null
+		data.effect = Classes_3.Effect.new(input)
+		data.time = Global.num.rest.start
+		data.delay = 0
+		data.cord = "standart"
+		add_pause(data)
+		fix_temp()
+
+	func mob_choise():
+		var team = "mob"
+		var dancer = Global.obj.ballroom.dict.troupe[team].arr.dancer.front()
+		dancer.get_exam()

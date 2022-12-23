@@ -157,14 +157,6 @@ class Challenge:
 		word.type = input_.type
 		obj.exam = input_.exam
 
-	func tick():
-		num.time.current += 1
-		
-		if num.time.current >= num.time.max:
-			num.time.current = 0
-			check_examinees()
-			obj.exam.obj.ballroom.arr.exam.erase(obj.exam)
-
 	func check_examinees():
 		for examinee in obj.exam.arr.examinee:
 			for zone in obj.exam.arr.zone:
@@ -184,54 +176,58 @@ class Exam:
 		word.name = input_.name
 		obj.examiner = input_.examiner
 		obj.ballroom = obj.examiner.obj.troupe.obj.ballroom
-		set_examinees()
-		set_challenge()
-		set_zones()
-		set_penalty()
+		set_descriptions(input_.description)
 
-	func set_examinees():
-		var dancers = obj.ballroom.dict.troupe[Global.dict.opponent[obj.examiner.obj.troupe.word.team]].arr.dancer
+	func set_descriptions(description_):
+		for key in description_.keys():
+			var data = description_[key]
+			
+			match key:
+				"examinees":
+					set_examinees(data)
+				"challenge":
+					set_challenge(data)
+				"zone":
+					set_zones(data)
+				"penalty":
+					set_penalty(data)
+
+	func set_examinees(data_):
+		var opponent = obj.ballroom.dict.troupe[Global.dict.opponent[obj.examiner.obj.troupe.word.team]].arr.dancer
 		arr.examinee = []
 		
-		match word.name:
-			"classic exam 0":
-				arr.examinee.append_array(dancers)
+		match data_["target"]:
+			"all":
+				dancers.append_array(opponent)
+		
+		arr.examinee.append_array(dancers)
 
-	func set_challenge():
+	func set_challenge(data_):
 		var input = {}
 		input.exam = self
 		
-		match word.name:
-			"classic exam 0":
-				input.delay = 1
-				input.type = "outside"
+		for key in data_.keys():
+			input[key] = data_[key_]
 		
 		obj.challenge = Classes_1.Challenge.new(input)
 
-	func set_zones():
+	func set_zones(data):
 		arr.zone = []
-		
 		var input = {}
 		input.exam = self
 		
-		match word.name:
-			"classic exam 0":
-				input.type = "circle"
-				input.target = "first"
-				input.r = Global.dict.r[input.type][0]
+		for key in data_.keys():
+			input[key] = data_[key_]
 		
 		var zone = Classes_1.Zone.new(input)
 		arr.zone.append(zone)
 
-	func set_penalty():
+	func set_penalty(data):
 		var input = {}
 		input.exam = self
 		
-		match word.name:
-			"classic exam 0":
-				input.effect = "instantaneous"
-				input.type = "percent"
-				input.value = 25
+		for key in data_.keys():
+			input[key] = data_[key_]
 		
 		obj.penalty = Classes_1.Penalty.new(input)
 
@@ -252,18 +248,22 @@ class Feature:
 
 class Dancer:
 	var num = {}
+	var word = {}
 	var vec = {}
 	var obj = {}
+	var arr = {}
 	var color = {}
 	var scene = {}
 
 	func _init(input_):
 		num.a = Global.num.dancer.a
+		word.name = input_.name
 		obj.troupe = input_.troupe
 		obj.ballroom = obj.troupe.obj.ballroom
 		init_feature()
 		init_scenes()
 		set_color()
+		arr.exam = []
 		vec.eye = Vector2(1,0)
 		num.angle = {}
 		num.angle.current = 0
@@ -293,12 +293,16 @@ class Dancer:
 			"champion":
 				color.background = Color.green
 		
-		scene.dancer.map.set_color(color.background)
-		scene.dancer.ui.set_color(color.background)
+		scene.dancer.map.set_sprite(obj.troupe.word.team,color.background)
+		scene.dancer.ui.set_sprite(obj.troupe.word.team,color.background)
 
 	func set_position(position_):
 		vec.position = position_
 		scene.dancer.map.position = vec.position
+
+	func add_exam(exam_):
+		var input = {}
+		arr.exam.append(exam_)
 
 	func shift(step_):
 		set_position(obj.troupe.obj.ballroom.limit_step(vec.position,step_))
@@ -309,13 +313,12 @@ class Dancer:
 		rotate_by(num.angle.target)
 
 	func update_eye():
-		vec.eye = Vector2(1,0).rotated(num.angle.current)
 		
 #		if vec.eye.x != 0:
 #			vec.eye.x = vec.eye.x/abs(vec.eye.x)
 #		if vec.eye.y != 0:
 #			vec.eye.y = vec.eye.y/abs(vec.eye.y)
-		pass
+		vec.eye = Vector2(1,0).rotated(num.angle.current)
 
 	func get_angle_by_target(dot_):
 		var vector = dot_.vec.position-vec.position
@@ -377,7 +380,6 @@ class Dancer:
 			exam.arr.examinee.erase(self)
 		
 		scene.dancer.map.queue_free()
-		#Global.node.Dancers
 
 class Troupe:
 	var word = {}

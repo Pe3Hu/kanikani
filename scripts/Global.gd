@@ -54,6 +54,9 @@ func init_num():
 	num.card = {}
 	num.card.zoom = 1.2
 	
+	num.rest = {}
+	num.rest.start = 2
+	
 	dict.r = {
 		"circle": [num.ballroom.a]
 	}
@@ -101,7 +104,8 @@ func init_dict():
 	
 	dict.effect = {}
 	dict.effect.cast = ["stream","splash"]
-	dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
+	dict.effect.content = ["hitch","rotate","move","skill","rest"]
+	dict.effect.skill = ["damage","heal","instigate","buff","debuff","summon"]
 	
 	dict.feature = {}
 	dict.feature.base = {
@@ -118,6 +122,13 @@ func init_dict():
 			"move": 1
 		}
 	}
+	
+	dict.dancer = {}
+	dict.dancer.exam = {
+		"champion_0": ["exam_0"],
+		"mob_0": ["exam_1000"]
+	}
+	
 
 func init_window_size():
 	dict.window_size = {}
@@ -158,6 +169,7 @@ func init_arr():
 	arr.chesspiece = ["king","queen","rook","bishop","knight","pawn"]
 	arr.pas = ["left rotate","right rotate","move forward"]
 	arr.cord = ["slow","standart","fast"]
+	arr.act = ["hitch","rotate","move","skill","rest"]
 	
 	arr.sprite = {}
 	arr.sprite.card = ["Chesspiece","Layer","Skill","Border"]

@@ -41,10 +41,6 @@ func _process(delta):
 	if Global.obj.keys().has("timeflow"):
 		if !Global.obj.timeflow.flag.stop:
 			Global.obj.timeflow.tick(delta)
-			
-			if Global.obj.keys().has("ballroom"):
-				for exam in Global.obj.ballroom.arr.exam:
-					exam.obj.challenge.tick()
 	#print(delta,"FPS " + String(Engine.get_frames_per_second()))
 
 func _on_Timer_timeout():

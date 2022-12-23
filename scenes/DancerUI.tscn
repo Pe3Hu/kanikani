@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://assets/dancers/dancer_icon_1.png" type="Texture" id=1]
+[ext_resource path="res://assets/dancers/champion_icon.png" type="Texture" id=1]
 [ext_resource path="res://assets/fonts/ALBA____.TTF" type="DynamicFontData" id=2]
 [ext_resource path="res://assets/bars/bar_120_10.png" type="Texture" id=3]
 [ext_resource path="res://scripts/DancerUI.gd" type="Script" id=4]

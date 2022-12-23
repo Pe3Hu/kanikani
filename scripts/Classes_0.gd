@@ -149,7 +149,7 @@ class Ballroom:
 			dict.troupe[input.team] = troupe
 		
 		spread_troupes()
-		add_exam("mob")
+		set_exams()
 
 	func spread_troupes():
 		var n = 3
@@ -173,12 +173,16 @@ class Ballroom:
 				var enemy = dancer.find_enemy()
 				dancer.look_at_dot(enemy.obj.dot)
 
-	func add_exam(team_):
-		var input = {}
-		input.examiner = dict.troupe[team_].arr.dancer.front()
-		input.name = Global.arr.exam.front()
-		var exam = Classes_1.Exam.new(input)
-		arr.exam.append(exam)
+	func set_exams():
+		for team in dict.troupe.keys():
+			for dancer in dict.troupe[team].arr.dancer:
+				for exam in Global.dict.dancer.exam[dancer.word.name]:
+					dancer.add_exam(exam)
+#		var input = {}
+#		input.examiner = dict.troupe[team_].arr.dancer.front()
+#		input.name = Global.arr.exam.front()
+#		var exam = Classes_1.Exam.new(input)
+#		arr.exam.append(exam)
 
 	func shift_troupe(team_,step_):
 		for dancer in dict.troupe[team_].arr.dancer:
@@ -233,6 +237,8 @@ class Ballroom:
 				if d < Global.num.ballroom.a/2:
 					obj.current.dot = dot
 					return
+
+
 
 	func check_borderline(mouse_):
 		var offset = Global.vec.ballroom.offset

@@ -2,8 +2,8 @@
 
 [ext_resource path="res://assets/bars/ring.png" type="Texture" id=1]
 [ext_resource path="res://scripts/Game.gd" type="Script" id=2]
-[ext_resource path="res://scripts/BallroomDraw.gd" type="Script" id=3]
-[ext_resource path="res://scripts/TimeflowDraw.gd" type="Script" id=4]
+[ext_resource path="res://scripts/DrawBallroom.gd" type="Script" id=3]
+[ext_resource path="res://scripts/DrawTimeflow.gd" type="Script" id=4]
 
 [node name="Game" type="Node"]
 script = ExtResource( 2 )
