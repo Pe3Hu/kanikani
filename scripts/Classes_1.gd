@@ -82,155 +82,21 @@ class Square:
 			obj.ballroom.dict.dot[arr.n.front()][arr.dot.front().vec.grid.y].append(obj.ballroom.dict.position[input.position])
 			obj.ballroom.dict.position[input.position].arr.n.append(arr.n.front())
 
-class Zone:
-	var word = {}
-	var arr = {}
-	var vec = {}
+class Examinee:
+	var dict = {}
 	var obj = {}
-	var color = {}
 
 	func _init(input_):
-		vec.distance = input_.distance
-		vec.size = input_.vector
-		word.type = input_.type
-		arr.vertex = []
 		obj.exam = input_.exam
-		color.background = Color.black
-
-	func set_vertexs():
-		match word.type:
-			"circle":
-				var position = obj.exam.obj.card.obj.pas.obj.dot.vec.position
-				arr.vertex.append(position)
-
-	func check_examine(examine_, type_):
-		var inside = null
+		var team = obj.exam.obj.examiner.obj.troupe.word.team
+		var ballroom = obj.exam.obj.examiner.obj.troupe.obj.ballroom
+		var dancers = ballroom.dict.troupe[Global.dict.opponent[team]].arr.dancer
 		
-		match word.type:
-			"circle":
-				var d = arr.vertex.front().distance_to(examine_.vec.position)
-				inside = d <= vec.size.x
-		
-		match type_:
-			"inside":
-				return !inside
-			"outside":
-				return inside
-
-class Penalty:
-	var num = {}
-	var word = {}
-	var arr = {}
-	var obj = {}
-
-	func _init(input_):
-		num.value = input_.value
-		word.type = input_.type
-		word.effect = input_.effect
-		obj.exam = input_.exam
-		arr.dancer = []
-
-	func punishment():
-		for dancer in arr.dancer:
-			match word.effect:
-				"instantaneous":
-					match word.type:
-						"percent":
-							var damage = float(dancer.obj.feature.dict["health"].max*num.value)/100
-							dancer.get_damage(damage)
-		
-		arr.dancer = []
-
-class Challenge:
-	var num = {}
-	var word = {}
-	var obj = {}
-
-	func _init(input_):
-		num.preparation = {}
-		num.preparation.max = input_.preparation
-		num.preparation.current = 0
-		word.type = input_.type
-		obj.exam = input_.exam
-
-	func check_examinees():
-		for secondary in obj.exam.arr.secondary:
-			for zone in obj.exam.arr.zone:
-				if zone.check_examine(secondary,word.type):
-					if !obj.exam.obj.penalty.arr.dancer.has(secondary):
-						obj.exam.obj.penalty.arr.dancer.append(secondary)
-		
-		if obj.exam.obj.penalty.arr.dancer.size() > 0:
-			obj.exam.obj.penalty.punishment()
-
-class Exam:
-	var word = {}
-	var arr = {}
-	var obj = {}
-
-	func _init(input_):
-		word.name = input_.name
-		obj.examiner = input_.examiner
-		obj.ballroom = obj.examiner.obj.troupe.obj.ballroom
-		obj.card = null
-
-	func set_descriptions():
-		var description = Global.dict.exam.description[word.name]
-		
-		for key in description.keys():
-			var data = description[key]
-			
-			match key:
-				"examinees":
-					set_examinees(data)
-				"challenge":
-					set_challenge(data)
-				"zone":
-					set_zones(data)
-				"penalty":
-					set_penalty(data)
-
-	func set_examinees(data_):
-		var team = obj.examiner.obj.troupe.word.team
-		var dancers = obj.ballroom.dict.troupe[Global.dict.opponent[team]].arr.dancer
-		
-		for key in data_.keys():
-			arr[key] = []
-			var data = data_[key]
+		for key in input_.description.keys():
+			dict[key] = []
+			var data = input_.description[key]
 			var arr_ = find_dancers(dancers,data)
-			arr[key].append_array(arr_)
-
-	func set_challenge(data_):
-		var input = {}
-		input.exam = self
-		
-		for key in data_.keys():
-			input[key] = data_[key]
-		
-		obj.challenge = Classes_1.Challenge.new(input)
-
-	func set_zones(data_):
-		arr.zone = []
-		var input = {}
-		input.exam = self
-		
-		for key in data_.keys():
-			input[key] = data_[key]
-		
-		var zone = Classes_1.Zone.new(input)
-		arr.zone.append(zone)
-
-	func set_penalty(data_):
-		var input = {}
-		input.exam = self
-		
-		for key in data_.keys():
-			input[key] = data_[key]
-		
-		obj.penalty = Classes_1.Penalty.new(input)
-
-	func end():
-		obj.ballroom.arr.exam.erase(self)
+			dict[key].append_array(arr_)
 
 	func find_dancers(dancers_,key_):
 		var dancers = []
@@ -255,11 +121,128 @@ class Exam:
 	func get_goal():
 		var goal = Vector2()
 		
-		for main in arr.main:
+		for main in dict.main:
 			goal += main.vec.position
 		
-		goal /= arr.main.size()
+		goal /= dict.main.size()
 		return goal
+
+class Zone:
+	var word = {}
+	var arr = {}
+	var vec = {}
+	var obj = {}
+	var color = {}
+
+	func _init(input_):
+		vec.distance = input_.description.distance
+		vec.size = input_.description.vector
+		word.type = input_.description.type
+		arr.vertex = []
+		obj.exam = input_.exam
+		color.background = Color.black
+
+	func set_vertexs():
+		match word.type:
+			"circle":
+				var position = obj.exam.obj.card.obj.pas.obj.dot.vec.position
+				arr.vertex.append(position)
+
+	func check_examine(examine_,type_):
+		var inside = null
+		
+		match word.type:
+			"circle":
+				var d = arr.vertex.front().distance_to(examine_.vec.position)
+				inside = d <= vec.size.x
+		
+		match type_:
+			"inside":
+				return !inside
+			"outside":
+				return inside
+
+class Penalty:
+	var num = {}
+	var word = {}
+	var arr = {}
+	var obj = {}
+
+	func _init(input_):
+		num.value = input_.description.value
+		word.type = input_.description.type
+		word.effect = input_.description.effect
+		obj.exam = input_.exam
+		arr.dancer = []
+
+	func punishment():
+		for dancer in arr.dancer:
+			match word.effect:
+				"instantaneous":
+					match word.type:
+						"percent":
+							var damage = float(dancer.obj.feature.dict["health"].max*num.value)/100
+							dancer.get_damage(damage)
+		
+		arr.dancer = []
+
+class Challenge:
+	var num = {}
+	var word = {}
+	var flag = {}
+	var obj = {}
+
+	func _init(input_):
+		num.preparation = {}
+		num.preparation.max = input_.description.preparation
+		num.preparation.current = 0
+		num.hitch = input_.description.hitch
+		num.rest = input_.description.rest
+		word.type = input_.description.type
+		flag.aim = input_.description.aim
+		flag.convergence = input_.description.convergence
+		obj.exam = input_.exam
+
+	func check_examinees():
+		for secondary in obj.exam.obj.examinee.dict.secondary:
+			if obj.exam.obj.zone.check_examine(secondary,word.type):
+				if !obj.exam.obj.penalty.arr.dancer.has(secondary):
+					obj.exam.obj.penalty.arr.dancer.append(secondary)
+		
+		print(obj.exam.obj.examinee.dict.secondary,obj.exam.obj.penalty.arr.dancer)
+		if obj.exam.obj.penalty.arr.dancer.size() > 0:
+			obj.exam.obj.penalty.punishment()
+
+class Exam:
+	var word = {}
+	var obj = {}
+
+	func _init(input_):
+		word.name = input_.name
+		obj.examiner = input_.examiner
+		obj.ballroom = obj.examiner.obj.troupe.obj.ballroom
+		obj.card = null
+
+	func set_descriptions():
+		var description = Global.dict.exam.description[word.name]
+		
+		for key in description.keys():
+			var input = {}
+			input.exam = self
+			input.description = description[key]
+			
+			match key:
+				"examinee":
+					obj.examinee = Classes_1.Examinee.new(input)
+				"challenge":
+					obj.challenge = Classes_1.Challenge.new(input)
+				"zone":
+					obj.zone = Classes_1.Zone.new(input)
+				"penalty":
+					obj.penalty = Classes_1.Penalty.new(input)
+
+	func end():
+		obj.ballroom.arr.exam.erase(self)
 
 class Feature:
 	var obj = {}
@@ -272,6 +255,103 @@ class Feature:
 			dict[name] = {}
 			dict[name].max = Global.dict.feature.base[obj.dancer.obj.troupe.word.team][name]
 			dict[name].current = dict[name].max
+
+class Croupier:
+	var num = {}
+	var obj = {}
+	var dict = {}
+	var flag = {}
+	
+	func _init(input_):
+		num.draw = {}
+		num.draw.pas = input_.draw.pas
+		num.draw.exam = input_.draw.exam
+		num.n = min(num.draw.pas,num.draw.exam)
+		obj.dancer = input_.dancer
+		flag.empty = {}
+		
+		for name_ in num.draw.keys():
+			dict[name_] = {}
+			flag.empty[name_] = false
+			
+			for key in Global.arr.croupier:
+				dict[name_][key] = []
+
+	func add_part(name_,part_):
+		dict[name_].discard.append(part_)
+
+	func fill_hand():
+		for name_ in dict.keys():
+			while dict[name_].hand.size() < num.draw[name_] && !flag.empty[name_]:
+				draw_part(name_)
+		
+		check_12_king()
+		mix_parts()
+
+	func draw_part(name_):
+		if dict[name_].deck.size() > 0:
+			dict[name_].option.append(dict[name_].deck.pop_front())
+		else:
+			regain_discard(name_)
+			
+			if dict[name_].deck.size() == 0:
+				flag.empty[name_] = true
+			else:
+				dict[name_].option.append(dict[name_].deck.pop_front())
+
+	func regain_discard(name_):
+		print("#")
+		while dict[name_].discard.size() > 0:
+			dict[name_].deck.append(dict[name_].discard.pop_front())
+
+	func check_12_king():
+		if obj.dancer.obj.troupe.word.team == "champion":
+			var data = {}
+			data.name = "pas"
+			data.layer = 12
+			data.chesspiece = "king"
+			data = get_part(data)
+			
+			if data.part != null:
+				if data.key != "option":
+					dict[data.name][data.key].erase(data.part)
+					dict[data.name].option.append(data.part)
+
+	func get_part(data_):
+		data_.key = null
+		data_.part = null
+		
+		for key in Global.arr.croupier: 
+			for part in dict[data_.name][key]:
+				match data_.part:
+					"pas":
+						if part.num.layer == data_.layer && part.word.chesspiece == data_.chesspiece:
+							data_.part = part
+							data_.key = key
+							return data_
+		
+		return data_
+
+	func mix_parts():
+		for name_ in dict.keys():
+			dict[name_].option.shuffle()
+		
+		for _i in num.n:
+			var data = {}
+			data.dancer = obj.dancer
+			data.temp = obj.dancer.obj.troupe.word.team == "mob"
+			
+			for name_ in dict.keys(): 
+				data[name_] = dict[name_].option.pop_front()
+			
+			Global.obj.easel.add_card(data)
+
+	func discard_hand():
+		for name_ in dict.keys():
+			while dict[name_].hand.size() > 0:
+				dict[name_].discard.append(dict[name_].hand.pop_front())
+			while dict[name_].option.size() > 0:
+				dict[name_].discard.append(dict[name_].option.pop_front())
 
 class Dancer:
 	var num = {}
@@ -291,6 +371,7 @@ class Dancer:
 		init_scenes()
 		init_exams()
 		init_pass()
+		inin_croupier()
 		set_color()
 		vec.eye = Vector2(1,0)
 		num.angle = {}
@@ -356,6 +437,18 @@ class Dancer:
 	
 		for name_ in Global.dict.dancer.exam[word.name]:
 			add_exam(name_)
+
+	func inin_croupier():
+		var input = {}
+		input.draw = {}
+		input.draw.pas = obj.feature.dict["pas draw"].current
+		input.draw.exam = obj.feature.dict["exam draw"].current
+		input.dancer = self
+		obj.croupier = Classes_1.Croupier.new(input)
+		
+		for name_ in arr.keys():
+			for part in arr[name_]:
+				obj.croupier.add_part(name_,part)
 
 	func add_exam(name_):
 		var input = {}

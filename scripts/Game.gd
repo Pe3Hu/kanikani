@@ -6,6 +6,7 @@ func _ready():
 	Global.obj.ballroom = Classes_0.Ballroom.new()
 	Global.obj.easel = Classes_2.Easel.new()
 	Global.obj.timeflow = Classes_3.Timeflow.new()
+	Global.obj.timeflow.shift_act_sprites()
 
 func _input(event):
 	if event is InputEventMouseButton:

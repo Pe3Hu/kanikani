@@ -115,9 +115,11 @@ class Pas:
 			return []
 
 	func aim():
-		var goal = obj.card.obj.exam.get_goal()
-		obj.pas.dot = Global.obj.ballroom.find_nearest_dot(goal)
+		var goal = obj.card.obj.exam.obj.examinee.get_goal()
+		Global.obj.ballroom.find_nearest_dot(goal)
+		obj.dot = Global.current.dot
 		obj.card.obj.exam.obj.zone.set_vertexs()
+		print(obj.dot.vec.position)
 
 class Card:
 	var obj = {}
@@ -137,8 +139,23 @@ class Card:
 
 	func preuse():
 		var delay = 0
+		var contents = []
+		contents.append_array(Global.dict.effect.content)
 		
-		for content in Global.dict.effect.content:
+		if !obj.exam.obj.challenge.flag.convergence:
+			var index_f = contents.find("rotate")
+			contents.pop_at(index_f)
+			contents.erase("move")
+		if !obj.exam.obj.challenge.flag.aim:
+			var index_f = contents.find_last("rotate")
+			contents.pop_at(index_f)
+			#contents.erase("aim")
+		if obj.exam.obj.challenge.num.hitch == 0:
+			contents.erase("hitch")
+		if obj.exam.obj.challenge.num.rest == 0:
+			contents.erase("rest")
+		print(contents)
+		for content in contents:
 			var input = {}
 			input.value = null
 			input.content = content
@@ -152,8 +169,8 @@ class Card:
 				input.value = obj.dancer.obj.feature.dict[content].current
 			
 			match content:
-				"rest":
-					data.time = input.value
+				"hitch":
+					data.time = obj.exam.obj.challenge.num.hitch
 				"rotate":
 					if obj.pas.obj.dot != obj.dancer.obj.dot:
 						obj.dancer.get_angle_by_target(obj.pas.obj.dot)
@@ -168,16 +185,15 @@ class Card:
 				"exam":
 					data.time = obj.exam.obj.challenge.num.preparation.max
 				"rest":
-					data.time = input.value
+					data.time = obj.exam.obj.challenge.num.rest
 			
-			if data.time > 0:
-				data.dancer = obj.dancer
-				data.card = self
-				data.effect = Classes_3.Effect.new(input)
-				data.delay = delay
-				data.cord = "standart"
-				Global.obj.timeflow.add_pause(data)
-				delay += data.time
+			data.dancer = obj.dancer
+			data.card = self
+			data.effect = Classes_3.Effect.new(input)
+			data.delay = delay
+			data.cord = "standart"
+			Global.obj.timeflow.add_pause(data)
+			delay += data.time
 			
 		var ends = []
 		ends.append_array(Global.obj.ballroom.arr.end)
@@ -213,57 +229,18 @@ class Easel:
 
 	func next_action():
 		var team = Global.current.dancer.obj.troupe.word.team
-		fill_hand()
-
-	func fill_hand():
-		arr.hand = []
+		Global.current.dancer.obj.croupier.fill_hand()
 		
-		var dancer = Global.current.dancer
-		var team = dancer.obj.troupe.word.team
-		var options = {}
-		options.pas = []
-		options.exam = []
-		var n = 4
-		
-		if team == "mob":
-			n = 1
-		
-		for _i in n:
-			options.pas.append(Global.get_random_element(dancer.arr.pas))
-			options.exam.append(Global.get_random_element(dancer.arr.exam))
-		
-		if team == "champion":
-			var pas = null
-			
-			for pas_ in dancer.arr.pas:
-				if pas_.num.layer == 12 && pas_.word.chesspiece == "king":
-					pas = pas_
-			
-			if !options.pas.has(pas):
-				options.pas.pop_front()
-				options.pas.append(pas)
-		
-		for _i in n:
-			var data = {}
-			data.dancer = dancer
-			data.temp = team == "mob"
-			Global.rng.randomize()
-			var index_r = Global.rng.randi_range(0, options.pas.size()-1)
-			data.pas = options.pas.pop_at(index_r)
-			Global.rng.randomize()
-			index_r = Global.rng.randi_range(0, options.exam.size()-1)
-			data.exam = options.exam.pop_at(index_r)
-			add_card(data)
-		
-		if team == "champion":
-			update_hand()
-			Global.obj.timeflow.flag.stop = true
-		else:
-			discard_dinieds()
-			var card = Global.get_random_element(arr.hand)
-			card.obj.pas.obj.dot = dancer.obj.dot
-			card.preuse()
-			Global.obj.timeflow.fix_temp()
+		match team:
+			"champion":
+				update_hand()
+				Global.obj.timeflow.flag.stop = true
+			"mob":
+				discard_dinieds()
+				var card = Global.get_random_element(arr.hand)
+				#card.obj.pas.obj.dot = Global.current.dancer.obj.dot
+				card.preuse()
+				Global.obj.timeflow.fix_temp()
 
 	func update_hand():
 		var card_gap = Global.vec.card.size.x*Global.num.card.zoom

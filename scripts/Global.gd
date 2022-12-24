@@ -102,7 +102,7 @@ func init_dict():
 	
 	dict.effect = {}
 	dict.effect.cast = ["stream","splash"]
-	dict.effect.content = ["hitch","rotate","move","rotate","exam","rest"]
+	dict.effect.content = ["hitch","rotate","move","aim","rotate","exam","rest"]
 	dict.effect.exam = ["damage","heal","instigate","buff","debuff","summon"]
 	
 	dict.feature = {}
@@ -114,20 +114,26 @@ func init_dict():
 			"move": 100,
 			"irritant": 1,
 			"hitch": 0,
-			"rest": 1
+			"rest": 1,
+			"aim": 0,
+			"pas draw": 4,
+			"exam draw": 4
 		},
 		"mob": {
 			"health": 1000,
 			"rotate": 1,
 			"move": 1,
 			"hitch": 0,
-			"rest": 0#2
+			"rest": 0,#2
+			"aim": 0,
+			"pas draw": 1,
+			"exam draw": 1
 		}
 	}
 	
 	dict.dancer = {}
 	dict.dancer.exam = {
-		"champion_0": ["exam_0"],
+		"champion_0": ["exam_0","exam_0","exam_0","exam_0"],
 		"mob_0": ["exam_1000"]
 	}
 	
@@ -176,8 +182,8 @@ func init_arr():
 	
 	arr.n = [1,2,3,4,12]
 	arr.pas_layer = [2,3,4]
-	arr.exam = ["classic exam 0"]
 	arr.cord = ["slow","standart","fast"]
+	arr.croupier = ["deck","discard","hand","exile","option"]
 	
 	arr.sprite = {}
 	arr.sprite.card = ["Chesspiece","Layer","Exam","Border"]

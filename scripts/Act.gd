@@ -29,6 +29,8 @@ func set_sprites(act_):
 						var team = act_.obj.dancer.obj.troupe.word.team
 						path += act_.obj.effect.word.content+"/"+team+"/"
 						name_ = act_.obj.card.obj.exam.word.name+name_
+					"aim":
+						name_ = act_.obj.effect.word.content+name_
 					"hitch":
 						name_ = act_.obj.effect.word.content+name_
 					"rest":

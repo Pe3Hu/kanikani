@@ -5,11 +5,15 @@ func _ready():
 	Global.dict.exam = {}
 	Global.dict.exam.description = {
 		"exam_0": {
-			"examinees": {
+			"examinee": {
 				"main": "max health",
 				"secondary": ""
 			},
 			"challenge": {
+				"convergence": true,
+				"aim": true,
+				"hitch": 0,
+				"rest": 3,
 				"preparation": 1,
 				"type": "claim 0",
 			},
@@ -25,11 +29,15 @@ func _ready():
 			}
 		},
 		"exam_1000": {
-			"examinees": {
+			"examinee": {
 				"main": "max health",
 				"secondary": "all"
 			},
 			"challenge": {
+				"convergence": false,
+				"aim": false,
+				"hitch": 0,
+				"rest": 2,
 				"preparation": 3,
 				"type": "outside",
 			},

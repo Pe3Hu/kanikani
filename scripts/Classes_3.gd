@@ -39,6 +39,8 @@ class Effect:
 				var d = obj.object.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.value.current,d))
 				obj.object.move_by(step)
+			"aim":
+				obj.act.obj.card.obj.pas.aim()
 			"exam":
 				obj.act.obj.card.obj.exam.obj.challenge.check_examinees()
 			"rest":
@@ -103,7 +105,6 @@ class Act:
 			if obj.effect.word.content == "move":
 				obj.dancer.vec.position = obj.card.obj.pas.obj.dot.vec.position
 				obj.dancer.set_dot()
-				obj.card.obj.pas.aim()
 		
 		obj.cord.dict.pause[num.end].erase(self)
 		
