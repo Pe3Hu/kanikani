@@ -19,6 +19,7 @@ class Effect:
 		match word.content:
 			"rotate":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
+				print("!",num.value.max)
 			"move":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
 				
@@ -28,24 +29,42 @@ class Effect:
 
 	func apply():
 		update_value()
+		
 #		dict.effect.cast = ["stream","splash"]
 #		dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
 		match word.content:
 			"rotate":
 				var angle = obj.object.num.angle.target-obj.object.num.angle.current
 				var step = float(min(num.value.current,abs(angle)))*sign(angle)
+				print("@", word.content, angle, " ", step)
 				obj.object.rotate_by(step)
 			"move":
 				var d = obj.object.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.value.current,d))
+				print("@", word.content, " ", d, " ", step)
 				obj.object.move_by(step)
 			"aim":
 				obj.act.obj.card.obj.pas.aim()
+				print("#####",obj.act.obj.dancer.num.angle.target)
+				update_max(obj.act.obj.dancer.num.angle.target)
 			"exam":
 				obj.act.obj.card.obj.exam.obj.challenge.check_examinees()
 			"rest":
 				Global.current.dancer = obj.subject
 				Global.obj.easel.next_action()
+
+	func update_max(value_):
+		num.value.max = value_
+		
+		match word.content:
+			"rotate":
+				var data = {}
+				data.old = obj.act.num.end
+				obj.act.num.time = obj.dancer.get_time_for_rotate()
+				obj.act.num.end = obj.act.num.begin+obj.act.num.time
+				data.new = obj.act.num.end
+				data.dancer = obj.act.obj.dancer
+				obj.act.obj.cord.update_pauses(data)
 
 class Act:
 	var num = {}
@@ -210,6 +229,38 @@ class Cord:
 		for data in datas:
 			data.act.vec.bias = Vector2(data.x,data.act.vec.position.y)
 
+	func update_pauses(data_):
+		var shift = data_.new-data_.old
+		var acts = []
+		
+		for time in dict.pause.keys():
+			for act in dict.pause[time]:
+				if act.obj.dacner == data_.dacner && act.num.begin >= data_.old:
+					acts.append(act)
+					dict.pause[time].erase(act)
+					var data = {}
+					data.value = act.num.end
+					data.act = act
+					obj.timeflow.arr.timeline.erase(data)
+		
+		for act in acts:
+			act.num.begin += shift
+			act.num.end += shift
+			var data = {}
+			data.value = act.num.end
+			data.act = act
+			obj.timeflow.arr.timeline.append(data)
+			
+			if !dict.pause.keys().has(act.num.end):
+				dict.pause[act.num.end] = []
+			
+			dict.pause[act.num.end].append(act)
+		
+		update_positions()
+		
+	func update_positions():
+		pass
+
 class Dent:
 	var num = {}
 	var arr = {}
@@ -335,6 +386,8 @@ class Timeflow:
 				act.die()
 
 	func fix_temp():
+		Global.obj.easel.clean_hand()
+		
 		for timeline in arr.timeline:
 			if timeline.act.flag.temp:
 				timeline.act.flag.temp = false

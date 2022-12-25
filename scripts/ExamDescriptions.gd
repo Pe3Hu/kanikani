@@ -13,7 +13,7 @@ func _ready():
 				"convergence": true,
 				"aim": true,
 				"hitch": 0,
-				"rest": 3,
+				"rest": 0,#3
 				"preparation": 1,
 				"type": "claim 0",
 			},
