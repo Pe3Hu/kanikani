@@ -102,7 +102,7 @@ func init_dict():
 	
 	dict.effect = {}
 	dict.effect.cast = ["stream","splash"]
-	dict.effect.content = ["hitch","rotate","move","aim","rotate","exam","rest"]
+	dict.effect.content = ["hitch","rotate","move","aim","rotate","preparation","exam","rest"]
 	dict.effect.exam = ["damage","heal","instigate","buff","debuff","summon"]
 	
 	dict.feature = {}
@@ -195,6 +195,7 @@ func init_scene():
 	scene.dancer.ui = preload("res://scenes/DancerUI.tscn")
 	scene.card = preload("res://scenes/Card.tscn")
 	scene.act = preload("res://scenes/Act.tscn")
+	scene.zone = preload("res://scenes/Zone.tscn")
 
 func init_node():
 	node.Timer = get_node("/root/Game/Timer") 
@@ -202,6 +203,7 @@ func init_node():
 	node.Game = get_node("/root/Game") 
 	node.Hand = get_node("/root/Game/Easel/Hand") 
 	node.MapDancers = get_node("/root/Game/Ballroom/MapDancers") 
+	node.MapZones = get_node("/root/Game/Ballroom/MapZones") 
 	node.UIDancers = get_node("/root/Game/UIDancers") 
 	node.Acts = get_node("/root/Game/Timeflow/Acts") 
 
@@ -253,6 +255,9 @@ func init_vec():
 	
 	vec.sprite = {}
 	vec.sprite.size = Vector2(32,32)
+	
+	vec.zone = {}
+	vec.zone.size = Vector2(512,512)
 	
 
 func init_color():

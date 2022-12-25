@@ -48,7 +48,7 @@ func _ready():
 			},
 			"penalty": {
 				"effect": "instantaneous",
-				"type": "max percent",
+				"type": "max healt percent",
 				"value": 25,
 			}
 		}

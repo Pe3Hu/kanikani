@@ -30,6 +30,8 @@ script = ExtResource( 3 )
 
 [node name="MapDancers" type="Node" parent="Ballroom"]
 
+[node name="MapZones" type="Node" parent="Ballroom"]
+
 [node name="Easel" type="Node2D" parent="."]
 
 [node name="Hand" type="Node2D" parent="Easel"]

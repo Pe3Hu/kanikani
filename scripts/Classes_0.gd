@@ -219,15 +219,19 @@ class Ballroom:
 		return Vector2(x,y)
 
 	func find_nearest_dot(vec_):
+		Global.current.dot = null
+		var datas = []
+		
 		for position in dict.position.keys():
-			var dot = dict.position[position]
+			var data = {}
+			data.dot = dict.position[position]
 			
-			if dot.arr.layer.has(Global.num.layer.square):
-				var d = position.distance_to(vec_)
-				
-				if d < Global.num.ballroom.a/2:
-					Global.current.dot = dot
-					return
+			if data.dot.arr.layer.has(Global.num.layer.square):
+				data.value = position.distance_to(vec_)
+				datas.append(data)
+		
+		datas.sort_custom(Classes_0.Sorter, "sort_ascending")
+		Global.current.dot = datas.front().dot
 
 	func check_borderline(mouse_):
 		var offset = Global.vec.ballroom.offset

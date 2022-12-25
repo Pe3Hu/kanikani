@@ -19,13 +19,16 @@ class Effect:
 		match word.content:
 			"rotate":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
-				print("!",num.value.max)
+				#rint("!",num.value.max)
 			"move":
 				num.value.current = Global.obj.timeflow.num.delta*num.value.max
 				
 				if obj.object.obj.dot != null:
 					obj.object.obj.dot.obj.dancer = null
 					obj.object.obj.dot = null
+			"preparation":
+				update_max(null)
+				num.value.current = Global.obj.timeflow.num.delta*num.value.max
 
 	func apply():
 		update_value()
@@ -36,17 +39,26 @@ class Effect:
 			"rotate":
 				var angle = obj.object.num.angle.target-obj.object.num.angle.current
 				var step = float(min(num.value.current,abs(angle)))*sign(angle)
-				print("@", word.content, angle, " ", step)
+				#rint("@", word.content, angle, " ", step)
 				obj.object.rotate_by(step)
 			"move":
 				var d = obj.object.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.value.current,d))
-				print("@", word.content, " ", d, " ", step)
+				#int("@", word.content, " ", d, " ", step)
 				obj.object.move_by(step)
 			"aim":
+				if obj.act.obj.dancer.obj.troupe.word.team == "champion":
+					print("#",obj.act.obj.card.obj.pas.obj.dot)
 				obj.act.obj.card.obj.pas.aim()
-				print("#####",obj.act.obj.dancer.num.angle.target)
+				if obj.act.obj.dancer.obj.troupe.word.team == "champion":
+					print("##",obj.act.obj.card.obj.pas.obj.dot)
+					print("#####",obj.act.obj.dancer.num.angle.target)
 				update_max(obj.act.obj.dancer.num.angle.target)
+			"preparation":
+				var zone = obj.act.obj.card.obj.exam.obj.zone
+				var d = zone.vec.scale.max.x-zone.vec.scale.current.x
+				var step = float(min(num.value.current,d))
+				zone.rise_scale(step)
 			"exam":
 				obj.act.obj.card.obj.exam.obj.challenge.check_examinees()
 			"rest":
@@ -65,6 +77,8 @@ class Effect:
 				data.new = obj.act.num.end
 				data.dancer = obj.act.obj.dancer
 				obj.act.obj.cord.update_pauses(data)
+			"preparation":
+				num.value.max = obj.act.obj.card.obj.exam.obj.zone.vec.scale.max.x/obj.act.num.time
 
 class Act:
 	var num = {}
@@ -120,10 +134,13 @@ class Act:
 		if !flag.temp:
 			if obj.effect.word.cast == "splash":
 				obj.effect.apply()
-		
-			if obj.effect.word.content == "move":
-				obj.dancer.vec.position = obj.card.obj.pas.obj.dot.vec.position
-				obj.dancer.set_dot()
+			
+			match obj.effect.word.content:
+				"move":
+					obj.dancer.vec.position = obj.card.obj.pas.obj.dot.vec.position
+					obj.dancer.set_dot()
+				"preparetion":
+					obj.card.obj.exam.obj.zone.scene.vec.scale.current = Vector2()
 		
 		obj.cord.dict.pause[num.end].erase(self)
 		

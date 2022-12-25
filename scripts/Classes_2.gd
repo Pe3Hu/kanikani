@@ -115,10 +115,13 @@ class Pas:
 			return []
 
 	func aim():
+		
+		if  obj.card.obj.dancer.obj.troupe.word.team == "champion":
+			print("aim begin")
 		var goal = obj.card.obj.exam.obj.examinee.get_goal()
 		Global.obj.ballroom.find_nearest_dot(goal)
 		obj.dot = Global.current.dot
-		obj.card.obj.exam.obj.zone.set_vertexs()
+		obj.card.obj.exam.obj.zone.set_position()
 		Global.current.dancer.get_angle_by_target(obj.dot)
 
 class Examinee:
@@ -164,6 +167,8 @@ class Examinee:
 			goal += main.vec.position
 		
 		goal /= dict.main.size()
+		#var dancer = Global.obj.ballroom.dict.position[goal].obj.dancer
+		#print(goal, Global.obj.ballroom.dict.position[goal], dancer)
 		return goal
 
 class Zone:
@@ -172,30 +177,42 @@ class Zone:
 	var vec = {}
 	var obj = {}
 	var color = {}
+	var scene = {}
 
 	func _init(input_):
 		vec.distance = input_.description.distance
 		vec.size = input_.description.vector
+		vec.position = Vector2()
 		word.type = input_.description.type
 		obj.exam = input_.exam
 		color.background = Color.black
-
-	func set_vertexs():
-		arr.vertex = []
 		
+		init_scene()
+
+	func init_scene():
+		scene.zone = Global.scene.zone.instance()
+		scene.zone.set_sprite(self)
+		
+		vec.scale = {}
+		vec.scale.max = Vector2()
+		vec.scale.max += vec.size
+		vec.scale.max /= Global.vec.zone.size
+		vec.scale.current = Vector2()
+
+	func set_position():
 		match word.type:
 			"circle":
-				var position = obj.exam.obj.card.obj.pas.obj.dot.vec.position
-				arr.vertex.append(position)
+				vec.position = obj.exam.obj.card.obj.pas.obj.dot.vec.position
+				scene.zone.position = vec.position
 		
-		print("zone",arr.vertex)
+		#get_angle_by_target"zone",arr.vertex)
 
 	func check_examine(examine_,type_):
 		var inside = null
 		
 		match word.type:
 			"circle":
-				var d = arr.vertex.front().distance_to(examine_.vec.position)
+				var d = vec.position.distance_to(examine_.vec.position)
 				inside = d <= vec.size.x
 		
 		match type_:
@@ -203,6 +220,11 @@ class Zone:
 				return !inside
 			"outside":
 				return inside
+
+	func rise_scale(value_):
+		print(vec.scale.current.x)
+		vec.scale.current += Vector2(value_,value_)
+		scene.zone.scale = vec.scale.current
 
 class Penalty:
 	var num = {}
@@ -219,10 +241,11 @@ class Penalty:
 
 	func punishment():
 		for dancer in arr.dancer:
+			
 			match word.effect:
 				"instantaneous":
 					match word.type:
-						"percent":
+						"max healt percent":
 							var damage = float(dancer.obj.feature.dict["health"].max*num.value)/100
 							dancer.get_damage(damage)
 		
@@ -248,6 +271,7 @@ class Challenge:
 	func check_examinees():
 		for secondary in obj.exam.obj.examinee.dict.secondary:
 			if obj.exam.obj.zone.check_examine(secondary,word.type):
+			
 				if !obj.exam.obj.penalty.arr.dancer.has(secondary):
 					obj.exam.obj.penalty.arr.dancer.append(secondary)
 		
@@ -329,7 +353,7 @@ class Card:
 			var data = {}
 			data.time = 0
 			
-			if content != "exam":
+			if content != "exam" && content != "preparation":
 				input.value = obj.dancer.obj.feature.dict[content].current
 			
 			match content:
@@ -346,7 +370,8 @@ class Card:
 					if obj.pas.obj.dot != obj.dancer.obj.dot:
 						input.cast = "stream"
 						data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
-				"exam":
+				"preparation":
+					input.cast = "stream"
 					data.time = obj.exam.obj.challenge.num.preparation.max
 				"rest":
 					data.time = obj.exam.obj.challenge.num.rest

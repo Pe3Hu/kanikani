@@ -324,6 +324,8 @@ class Dancer:
 
 	func get_angle_by_target(dot_):
 		var vector = dot_.vec.position-vec.position
+		if obj.troupe.word.team == "champion":
+			print(vec.eye,vec.eye.angle_to(vector))
 		num.angle.target = vec.eye.angle_to(vector)+num.angle.current
 
 	func rotate_by(angle_):
