@@ -159,6 +159,7 @@ class Etude:
 		obj.cord = data_.cord
 		obj.pas = data_.pas
 		obj.exam = data_.exam
+		
 
 	func add_act(data_):
 		var act = Classes_3.Act.new(data_)
@@ -171,11 +172,11 @@ class Etude:
 			num.time += act.num.time.max
 		
 		vec.position = Vector2()
-		vec.position += obj.cord.arr.vertex.front()
 		vec.bias = Vector2()
-		vec.bias += obj.cord.arr.vertex.front()
-		#print(vec.position,num.time)
-		shift(vec.position)
+		var shift = Vector2(obj.cord.num.left.x,obj.cord.num.left.y)
+		shift.x += obj.cord.obj.timeflow.num.shift*num.time
+		scene.etude.set_act(arr.act.back())
+		shift(shift)
 
 	func perform():
 		if arr.act.size() > 0:
@@ -343,8 +344,9 @@ class Dancer:
 		vec.position += step
 		scene.dancer.map.position = vec.position
 
-	func get_time_for_move(position_):
-		var time = vec.position.distance_to(position_)/obj.feature.dict["move"].current
+	func get_time_for_move():
+		var position = obj.etude.obj.pas.obj.dot.vec.position
+		var time = vec.position.distance_to(position)/obj.feature.dict["move"].current
 		return time
 
 	func find_enemy():
@@ -374,9 +376,10 @@ class Dancer:
 		obj.ballroom.find_nearest_dot(goal)
 		
 		if Global.current.dot != null:
-			Global.current.pas.obj.dot = Global.current.dot
+			obj.etude.obj.pas.obj.dot = Global.current.dot
 			obj.etude.obj.exam.obj.zone.set_position()
 			get_angle_by_target(Global.current.dot)
+			Global.current.dot = null
 
 	func get_damage(damage_):
 		obj.feature.dict["health"].current -= damage_

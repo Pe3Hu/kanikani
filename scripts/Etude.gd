@@ -30,15 +30,15 @@ func set_act(act_):
 			"move":
 				path += act_.obj.effect.word.content+"/"
 				name_ = act_.obj.card.obj.pas.word.chesspiece+name_
-			"preparation":
-				var team = act_.obj.dancer.obj.troupe.word.team
-				path += act_.obj.effect.word.content+"/"+team+"/"
-				name_ = act_.obj.card.obj.exam.word.name+name_
 		match act_.word.phase:
+			"exam":
+				var team = act_.obj.dancer.obj.troupe.word.team
+				path += "exam/"+team+"/"
+				name_ = act_.obj.card.obj.exam.word.name+name_
 			"hitch":
-				name_ = act_.obj.effect.word.content+name_
+				name_ = act_.word.phase+name_
 			"rest":
-				name_ = act_.obj.effect.word.content+name_
+				name_ = act_.word.phase+name_
 		
 		var texture = ImageTexture.new()
 		var image = Image.new()

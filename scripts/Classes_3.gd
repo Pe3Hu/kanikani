@@ -11,7 +11,7 @@ class Act:
 	var flag = {}
 
 	func _init(input_):
-		word.cord = input_.cord
+		obj.cord = input_.cord
 		word.phase = input_.phase
 		word.content = input_.content
 		obj.dancer = input_.dancer
@@ -53,8 +53,6 @@ class Act:
 				num.time.max = num.step.max
 
 	func perform_stage():
-		update_value()
-		
 		match arr.stage[num.stage.current]:
 			"prelude":
 				prelude()
@@ -83,15 +81,19 @@ class Act:
 		next_stage()
 
 	func rise():
+		update_value()
+		
 		match word.content:
 			"rotate":
 				var angle = obj.dancer.num.angle.target-obj.dancer.num.angle.current
 				var step = float(min(num.step.current,abs(angle)))*sign(angle)
 				obj.dancer.rotate_by(step)
+				print(angle, word.content, step)
 			"move":
-				var d = obj.dancer.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
+				var d = obj.dancer.vec.position.distance_to(obj.etude.obj.pas.obj.dot.vec.position)
 				var step = float(min(num.step.current,d))
 				obj.dancer.move_by(step)
+				print(d, word.content, step)
 			"preparation":
 				var zone = obj.etude.obj.exam.obj.zone
 				var d = zone.vec.scale.max.x-zone.vec.scale.current.x
@@ -107,11 +109,12 @@ class Act:
 			"move":
 				obj.dancer.obj.dot = obj.dancer.obj.etude.obj.pas.obj.dot
 			"preparation":
-				obj.exam.obj.challenge.check_examinees()
+				obj.etude.obj.exam.obj.challenge.check_examinees()
 		
 		next_stage()
 
 	func next_stage():
+		print(obj.dancer.obj.troupe.word.team,word,arr.stage[num.stage.current])
 		num.stage.current += 1 
 		
 		if num.stage.current >= num.stage.max:
@@ -163,7 +166,9 @@ class Cord:
 			if vertex != arr.vertex.front():
 				arr.vertex.append(vertex)
 		
-		num.y = (arr.vertex.front().y+arr.vertex.back().y)/2
+		num.left = {}
+		num.left.x = arr.vertex.front().x
+		num.left.y = (arr.vertex.front().y+arr.vertex.back().y)/2
 
 	func fix_temp():
 		arr.etude.append(obj.temp)
@@ -171,7 +176,6 @@ class Cord:
 		data.value = obj.timeflow.num.time.current + obj.temp.arr.act.front().num.time.max
 		data.etude = obj.temp 
 		obj.timeflow.arr.timeline.append(data)
-		print(obj.temp.obj.cord)
 		obj.temp = null
 
 	func perform():
@@ -304,8 +308,7 @@ class Timeflow:
 				data.content = "wait"
 				dancer.obj.etude.add_act(data)
 				add_temp(dancer)
-		
-		fix_temp()
+				fix_temp()
 
 	func add_temp(dancer_):
 		var cord = dancer_.obj.etude.obj.cord

@@ -303,8 +303,10 @@ class Exam:
 			"hitch":
 				check = obj.challenge.num.hitch != 0
 			"place processing":
-				if obj.challenge.flag.convergence:
+				if obj.challenge.flag.convergence || obj.card.obj.pas.obj.dot == obj.examiner.obj.dot:
 					match data_.content:
+						"find dot":
+							check = false
 						"rotate":
 							check = false
 						"move":
@@ -339,6 +341,7 @@ class Card:
 			obj.pas.obj.card = self
 
 	func preuse():
+		check_no_move()
 		var cord = "standart"
 		var data = {}
 		data.cord = Global.obj.timeflow.dict.cord[cord]
@@ -364,6 +367,10 @@ class Card:
 			end.update_color()
 		
 		Global.current.dot = null
+
+	func check_no_move():
+		if obj.pas.obj.dot == null:
+			obj.pas.obj.dot = obj.dancer.obj.dot
 
 	func check_access():
 		var team =  obj.dancer.obj.troupe.word.team
@@ -392,7 +399,7 @@ class Easel:
 		arr.hand = []
 		var team = Global.current.dancer.obj.troupe.word.team
 		Global.current.dancer.obj.croupier.fill_hand()
-		
+		print("next_action", team)
 		match team:
 			"champion":
 				update_hand()
