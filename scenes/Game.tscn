@@ -39,7 +39,7 @@ script = ExtResource( 3 )
 [node name="Timeflow" type="Node2D" parent="."]
 script = ExtResource( 4 )
 
-[node name="Acts" type="Node" parent="Timeflow"]
+[node name="Etudes" type="Node" parent="Timeflow"]
 
 [node name="UIDancers" type="Node" parent="."]
 

@@ -124,6 +124,7 @@ class Croupier:
 class Etude:
 	var num = {}
 	var word = {}
+	var vec = {}
 	var arr = {}
 	var obj = {}
 	var scene = {}
@@ -131,23 +132,31 @@ class Etude:
 
 	func _init(input_):
 		obj.dancer = input_.dancer
+		vec.position = Vector2()
+		vec.bias = Vector2()
 		arr.act = []
+		obj.cord = null
 		init_scenes()
 		reset()
 
 	func init_scenes():
-		scene.act = Global.scene.act.instance()
-		Global.node.Acts.add_child(scene.act)
-		scene.act.set_sprites(self)
+		scene.etude = Global.scene.etude.instance()
+		Global.node.Etudes.add_child(scene.etude)
+		scene.etude.set_sprites(self)
 
 	func reset():
+		arr.act = []
 		num.time = 0
-		word.cord = ""
+		
+		if obj.cord != null:
+			obj.cord.clean_etude(self)
+		
+		obj.cord = null
 		obj.pas =  null
 		obj.exam = null
 
 	func set_parts(data_):
-		word.cord = data_.cord
+		obj.cord = data_.cord
 		obj.pas = data_.pas
 		obj.exam = data_.exam
 
@@ -156,17 +165,37 @@ class Etude:
 		arr.act.append(act)
 
 	func calc_total_time():
+		#print(arr.act)
 		for act in arr.act:
 			act.calc_time()
 			num.time += act.num.time.max
+		
+		vec.position = Vector2()
+		vec.position += obj.cord.arr.vertex.front()
+		vec.bias = Vector2()
+		vec.bias += obj.cord.arr.vertex.front()
+		#print(vec.position,num.time)
+		shift(vec.position)
 
 	func perform():
 		if arr.act.size() > 0:
 			arr.act.front().perform_stage()
 		else:
-			Global.current.dancer = self
+			Global.current.dancer = obj.dancer
 			reset()
 			Global.obj.easel.next_action()
+
+	func shift(vec_):
+		vec.position += vec_
+		vec.bias += vec_
+		
+		if vec.position.x <= obj.cord.obj.timeflow.num.x.left:
+			vec.position.x = obj.cord.obj.timeflow.num.x.left
+		
+		if obj.cord.obj.timeflow.flag.narrow:
+			scene.etude.position = vec.position
+		else:
+			scene.etude.position = vec.bias
 
 class Dancer:
 	var num = {}
@@ -187,8 +216,8 @@ class Dancer:
 		init_exams()
 		init_pass()
 		init_croupier()
-		init_etude()
 		set_color()
+		init_etude()
 		vec.eye = Vector2(1,0)
 		num.angle = {}
 		num.angle.current = 0
@@ -296,8 +325,8 @@ class Dancer:
 
 	func get_angle_by_target(dot_):
 		var vector = dot_.vec.position-vec.position
-		if obj.troupe.word.team == "champion":
-			print(vec.eye,vec.eye.angle_to(vector))
+		#if obj.troupe.word.team == "champion":
+		#	print(vec.eye,vec.eye.angle_to(vector))
 		num.angle.target = vec.eye.angle_to(vector)+num.angle.current
 
 	func rotate_by(angle_):
@@ -340,9 +369,9 @@ class Dancer:
 			else:
 				Global.current.dot = null
 
-	func set_pas_target_dot(position_):
+	func set_pas_target_dot():
 		var goal = obj.etude.obj.exam.obj.examinee.get_goal()
-		obj.ballroom.find_nearest_dot(position_)
+		obj.ballroom.find_nearest_dot(goal)
 		
 		if Global.current.dot != null:
 			Global.current.pas.obj.dot = Global.current.dot

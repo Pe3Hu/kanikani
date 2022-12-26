@@ -3,8 +3,6 @@ extends Area2D
 
 var obj = {}
 
-func _ready() -> void:
-	self.connect("mouse_entered", self, "_on_Card_mouse_entered")
 
 func set_spirtes(data_):
 	obj.card = data_
@@ -31,11 +29,7 @@ func set_spirtes(data_):
 				path = path+"cards/"
 				name_ = obj.card.word.border+name_
 		
-		var texture = ImageTexture.new()
-		var image = Image.new()
-		image.load(path+name_)
-		texture.create_from_image(image)
-		sprite.texture = texture
+		sprite.texture = load(path+name_)
 
 func get_size():
 	var shape = get_node("CollisionShape2D").get_shape()

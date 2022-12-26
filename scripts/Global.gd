@@ -200,14 +200,14 @@ func init_arr():
 	
 	arr.sprite = {}
 	arr.sprite.card = ["Chesspiece","Layer","Exam","Border"]
-	arr.sprite.act = ["Dancer","Effect","Narrow"]
+	arr.sprite.act = ["Dancer","Act","Narrow"]
 
 func init_scene():
 	scene.dancer = {}
 	scene.dancer.map = preload("res://scenes/DancerMap.tscn")
 	scene.dancer.ui = preload("res://scenes/DancerUI.tscn")
 	scene.card = preload("res://scenes/Card.tscn")
-	scene.act = preload("res://scenes/Act.tscn")
+	scene.etude = preload("res://scenes/Etude.tscn")
 	scene.zone = preload("res://scenes/Zone.tscn")
 
 func init_node():
@@ -218,7 +218,7 @@ func init_node():
 	node.MapDancers = get_node("/root/Game/Ballroom/MapDancers") 
 	node.MapZones = get_node("/root/Game/Ballroom/MapZones") 
 	node.UIDancers = get_node("/root/Game/UIDancers") 
-	node.Acts = get_node("/root/Game/Timeflow/Acts") 
+	node.Etudes = get_node("/root/Game/Timeflow/Etudes") 
 
 func init_flag():
 	flag.click = false

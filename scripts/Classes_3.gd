@@ -18,7 +18,7 @@ class Act:
 		obj.etude = obj.dancer.obj.etude
 		num.step = {}
 		num.step.current = 0
-		set_max()
+		set_step_max()
 		num.time = {}
 		num.time.current = 0
 		num.time.max = 0
@@ -27,7 +27,7 @@ class Act:
 		#init_scenes()
 		set_stages()
 
-	func set_max():
+	func set_step_max():
 		if obj.dancer.obj.feature.dict.keys().has(word.content):
 			num.step.max = obj.dancer.obj.feature.dict[word.content].current
 		else:
@@ -44,12 +44,18 @@ class Act:
 	func calc_time():
 		match word.content:
 			"rotate":
-				num.time = obj.dancer.get_time_for_rotate()
+				num.time.max = obj.dancer.get_time_for_rotate()
+			"move":
+				num.time.max = obj.dancer.get_time_for_move()
+			"preparation":
+				num.time.max = obj.etude.obj.exam.obj.challenge.num.preparation.max
+			"wait":
+				num.time.max = num.step.max
 
 	func perform_stage():
 		update_value()
 		
-		match Global.dict.effect.stage[num.stage.current]:
+		match arr.stage[num.stage.current]:
 			"prelude":
 				prelude()
 			"rise":
@@ -165,11 +171,19 @@ class Cord:
 		data.value = obj.timeflow.num.time.current + obj.temp.arr.act.front().num.time.max
 		data.etude = obj.temp 
 		obj.timeflow.arr.timeline.append(data)
+		print(obj.temp.obj.cord)
 		obj.temp = null
 
 	func perform():
 		for etude in arr.etude:
 			etude.perform()
+
+	func clean_etude(etude_):
+		arr.etude.erase(etude_)
+		
+		for timeline in obj.timeflow.arr.timeline:
+			if timeline.etude == etude_:
+				obj.timeflow.arr.timeline.erase(timeline)
 
 class Dent:
 	var num = {}
@@ -187,8 +201,8 @@ class Dent:
 		for _i in arr.vertex.size():
 			arr.vertex[_i].x += vec_.x
 			
-			if arr.vertex[_i].x <= Global.obj.timeflow.num.begin:
-				arr.vertex[_i].x = Global.obj.timeflow.num.end-(Global.obj.timeflow.num.begin-arr.vertex[_i].x)
+			if arr.vertex[_i].x <= Global.obj.timeflow.num.x.left:
+				arr.vertex[_i].x = Global.obj.timeflow.num.x.right-(Global.obj.timeflow.num.x.left-arr.vertex[_i].x)
 
 class Timeflow:
 	var num = {}
@@ -201,6 +215,7 @@ class Timeflow:
 		num.time = {}
 		num.time.current = 0
 		num.shift = Global.num.dent.x
+		num.x = {}
 		arr.timeline = []
 		flag.narrow = true
 		flag.stop = false
@@ -229,7 +244,7 @@ class Timeflow:
 		input.vertexs.append(vertex)
 		vertex.y -= Global.vec.cord.size.y*Global.arr.cord.size()
 		input.vertexs.append(vertex)
-		num.begin = vertex.x
+		num.x.left = vertex.x
 		
 		for _i in Global.num.dent.n:
 			var dent = Classes_3.Dent.new(input)
@@ -238,7 +253,7 @@ class Timeflow:
 			for _j in input.vertexs.size():
 				input.vertexs[_j].x += x
 		
-		num.end = input.vertexs.front().x
+		num.x.right = input.vertexs.front().x
 
 	func tick(delta_):
 		num.delta = delta_
@@ -257,8 +272,8 @@ class Timeflow:
 				dent.shift(shift)
 			
 			for timeline in arr.timeline:
-				timeline.etude.perform()
 				timeline.etude.shift(shift)
+				timeline.etude.perform()
 		else:
 			Global.flag.timeline = false
 
@@ -277,23 +292,34 @@ class Timeflow:
 	func launch_mobs():
 		for team in Global.obj.ballroom.dict.troupe.keys():
 			for dancer in Global.obj.ballroom.dict.troupe[team].arr.dancer:
+				var cord = "standart"
 				var data = {}
+				data.dancer = dancer
+				data.cord = dict.cord[cord]
+				data.pas = null
+				data.exam = null
+				dancer.obj.etude.set_parts(data)
+				
 				data.phase = "rest"
 				data.content = "wait"
-				data.cord = "standart"
-				data.dancer = dancer
 				dancer.obj.etude.add_act(data)
 				add_temp(dancer)
 		
 		fix_temp()
 
 	func add_temp(dancer_):
-		var cord = dancer_.obj.etude.arr.act.front().word.cord
+		var cord = dancer_.obj.etude.obj.cord
+		cord.obj.temp = dancer_.obj.etude
+		#dancer_.obj.etude.obj.cord = cord
 		dancer_.obj.etude.calc_total_time()
-		dict.cord[cord].obj.temp = dancer_.obj.etude
 
 	func fix_temp():
 		for key in dict.cord.keys():
 			if dict.cord[key].obj.temp != null:
 				dict.cord[key].fix_temp()
 
+	func clean_temp():
+		for key in dict.cord.keys():
+			if dict.cord[key].obj.temp != null:
+				dict.cord[key].obj.temp.reset()
+				dict.cord[key].obj.temp = null

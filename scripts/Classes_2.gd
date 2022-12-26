@@ -158,7 +158,7 @@ class Examinee:
 		
 		goal /= dict.main.size()
 		#var dancer = Global.obj.ballroom.dict.position[goal].obj.dancer
-		#print(goal, Global.obj.ballroom.dict.position[goal], dancer)
+		#rint(goal, Global.obj.ballroom.dict.position[goal], dancer)
 		return goal
 
 class Zone:
@@ -212,7 +212,7 @@ class Zone:
 				return inside
 
 	func rise_scale(value_):
-		print(vec.scale.current.x)
+		#rint(vec.scale.current.x)
 		vec.scale.current += Vector2(value_,value_)
 		scene.zone.scale = vec.scale.current
 
@@ -303,14 +303,14 @@ class Exam:
 			"hitch":
 				check = obj.challenge.num.hitch != 0
 			"place processing":
-				if obj.exam.obj.challenge.flag.convergence:
+				if obj.challenge.flag.convergence:
 					match data_.content:
 						"rotate":
 							check = false
 						"move":
 							check = false
 			"target processing":
-				if obj.exam.obj.challenge.flag.convergence:
+				if obj.challenge.flag.convergence:
 					match data_.content:
 						"rotate":
 							check = false
@@ -339,16 +339,20 @@ class Card:
 			obj.pas.obj.card = self
 
 	func preuse():
+		var cord = "standart"
+		var data = {}
+		data.cord = Global.obj.timeflow.dict.cord[cord]
+		data.pas = obj.pas
+		data.exam = obj.exam
+		obj.dancer.obj.etude.set_parts(data)
+		
 		for phase in Global.dict.effect.phase.keys():
 			for content in Global.dict.effect.phase[phase]:
-				var data = {}
 				data.phase = phase
 				data.content = content
-				print(data)
 				
 				if obj.exam.check_content(data):
 					data.dancer = obj.dancer
-					data.cord = "standart"
 					obj.dancer.obj.etude.add_act(data)
 		
 		Global.obj.timeflow.add_temp(obj.dancer)

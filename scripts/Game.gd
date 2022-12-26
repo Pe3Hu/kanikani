@@ -16,7 +16,7 @@ func _input(event):
 				
 				if Global.obj.ballroom.check_borderline(mouse):
 					if Global.current.dancer != null:
-						Global.current.dancer.set_target_dot(mouse)
+						Global.current.dancer.set_pas_place_dot(mouse)
 				
 			Global.flag.click = !Global.flag.click
 		else:
