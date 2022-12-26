@@ -1,87 +1,6 @@
 extends Node
 
 
-class Dot:
-	var word = {}
-	var num = {}
-	var vec = {}
-	var arr = {}
-	var obj = {}
-	var dict = {}
-	var color = {}
-
-	func _init(input_):
-		num.index = Global.num.primary_key.dot
-		Global.num.primary_key.dot += 1
-		num.l = input_.l
-		arr.n = input_.ns
-		arr.layer = []
-		arr.center = []
-		vec.grid = input_.grid
-		vec.position = input_.position
-		obj.ballroom = input_.ballroom
-		obj.ballroom.dict.position[vec.position] = self
-		obj.dancer = null
-		color.background = Color.yellow
-		dict.neighbor = {}
-		
-		for n in Global.arr.n:
-			dict.neighbor[n] = {}
-
-	func update_color():
-		if obj.ballroom.arr.end.has(self):
-			color.current = Color.white
-		else:
-			color.background = Color.yellow
-			
-			if arr.center.has(Global.num.layer.square):
-				color.background = Color.blue
-			
-			color.current = color.background
-
-	func add_neighbor(layer_, windrose_, dot_):
-		dict.neighbor[layer_][windrose_] = dot_
-		dot_.dict.neighbor[layer_][Global.dict.reflected_windrose[windrose_]] = self
-
-	func set_dancer(dancer_):
-		obj.dancer = dancer_
-		dancer_.obj.dot = self
-
-class Square:
-	var vec = {}
-	var arr = {}
-	var obj = {}
-	var color = {}
-
-	func _init(input_):
-		vec.grid = input_.grid
-		arr.n = input_.ns
-		vec.center = Vector2()
-		obj.ballroom = input_.ballroom
-		arr.dot = input_.dots
-		arr.vertex = []
-		color.background = Color.gray
-		
-		for dot in arr.dot:
-			arr.vertex.append(dot.vec.position)
-			vec.center += dot.vec.position
-		
-		vec.center /= arr.vertex.size()
-		
-		var input = {}
-		input.grid = vec.grid
-		input.l = arr.dot.front().num.l
-		input.position = vec.center
-		
-		if !obj.ballroom.dict.position.keys().has(input.position):
-			input.ballroom = obj.ballroom
-			input.ns = arr.n
-			var dot = Classes_1.Dot.new(input)
-			obj.ballroom.dict.dot[arr.n.front()][arr.dot.front().vec.grid.y].append(dot)
-		else:
-			obj.ballroom.dict.dot[arr.n.front()][arr.dot.front().vec.grid.y].append(obj.ballroom.dict.position[input.position])
-			obj.ballroom.dict.position[input.position].arr.n.append(arr.n.front())
-
 class Feature:
 	var obj = {}
 	var dict = {}
@@ -202,6 +121,46 @@ class Croupier:
 			
 			flag.empty[name_] = false
 
+class Etude:
+	var num = {}
+	var word = {}
+	var arr = {}
+	var obj = {}
+	var dict = {}
+
+	func _init(input_):
+		obj.dancer = input_.dancer
+		arr.act = []
+		reset()
+
+	func reset():
+		num.time = 0
+		word.cord = ""
+		obj.pas =  null
+		obj.exam = null
+
+	func set_parts(data_):
+		word.cord = data_.cord
+		obj.pas = data_.pas
+		obj.exam = data_.exam
+
+	func add_act(data_):
+		var act = Classes_3.Act.new(data_)
+		arr.act.append(act)
+
+	func calc_total_time():
+		for act in arr.act:
+			act.calc_time()
+			num.time += act.num.time.max
+
+	func perform():
+		if arr.act.size() > 0:
+			arr.act.front().perform_stage()
+		else:
+			Global.current.dancer = self
+			reset()
+			Global.obj.easel.next_action()
+
 class Dancer:
 	var num = {}
 	var word = {}
@@ -220,7 +179,8 @@ class Dancer:
 		init_scenes()
 		init_exams()
 		init_pass()
-		inin_croupier()
+		init_croupier()
+		init_etude()
 		set_color()
 		vec.eye = Vector2(1,0)
 		num.angle = {}
@@ -287,7 +247,7 @@ class Dancer:
 		for name_ in Global.dict.dancer.exam[word.name]:
 			add_exam(name_)
 
-	func inin_croupier():
+	func init_croupier():
 		var input = {}
 		input.draw = {}
 		input.draw.pas = obj.feature.dict["pas draw"].current
@@ -298,6 +258,11 @@ class Dancer:
 		for name_ in arr.keys():
 			for part in arr[name_]:
 				obj.croupier.add_part(name_,part)
+
+	func init_etude():
+		var input = {}
+		input.dancer = self
+		obj.etude = Classes_1.Etude.new(input)
 
 	func add_exam(name_):
 		var input = {}
@@ -356,16 +321,26 @@ class Dancer:
 				obj.ballroom.dict.position[position].set_dancer(self)
 				return
 
-	func set_target_dot(position_):
+	func set_pas_place_dot(position_):
 		Global.obj.timeflow.clean_temp()
 		obj.ballroom.find_nearest_dot(position_)
 		
 		if Global.current.dot != null:
 			if obj.ballroom.arr.end.has(Global.current.dot):
 				Global.current.pas.obj.dot = Global.current.dot
+				get_angle_by_target(Global.current.dot)
 				Global.obj.easel.preuse_card()
 			else:
 				Global.current.dot = null
+
+	func set_pas_target_dot(position_):
+		var goal = obj.etude.obj.exam.obj.examinee.get_goal()
+		obj.ballroom.find_nearest_dot(position_)
+		
+		if Global.current.dot != null:
+			Global.current.pas.obj.dot = Global.current.dot
+			obj.etude.obj.exam.obj.zone.set_position()
+			get_angle_by_target(Global.current.dot)
 
 	func get_damage(damage_):
 		obj.feature.dict["health"].current -= damage_

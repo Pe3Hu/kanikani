@@ -1,6 +1,87 @@
 extends Node
 
 
+class Dot:
+	var word = {}
+	var num = {}
+	var vec = {}
+	var arr = {}
+	var obj = {}
+	var dict = {}
+	var color = {}
+
+	func _init(input_):
+		num.index = Global.num.primary_key.dot
+		Global.num.primary_key.dot += 1
+		num.l = input_.l
+		arr.n = input_.ns
+		arr.layer = []
+		arr.center = []
+		vec.grid = input_.grid
+		vec.position = input_.position
+		obj.ballroom = input_.ballroom
+		obj.ballroom.dict.position[vec.position] = self
+		obj.dancer = null
+		color.background = Color.yellow
+		dict.neighbor = {}
+		
+		for n in Global.arr.n:
+			dict.neighbor[n] = {}
+
+	func update_color():
+		if obj.ballroom.arr.end.has(self):
+			color.current = Color.white
+		else:
+			color.background = Color.yellow
+			
+			if arr.center.has(Global.num.layer.square):
+				color.background = Color.blue
+			
+			color.current = color.background
+
+	func add_neighbor(layer_, windrose_, dot_):
+		dict.neighbor[layer_][windrose_] = dot_
+		dot_.dict.neighbor[layer_][Global.dict.reflected_windrose[windrose_]] = self
+
+	func set_dancer(dancer_):
+		obj.dancer = dancer_
+		dancer_.obj.dot = self
+
+class Square:
+	var vec = {}
+	var arr = {}
+	var obj = {}
+	var color = {}
+
+	func _init(input_):
+		vec.grid = input_.grid
+		arr.n = input_.ns
+		vec.center = Vector2()
+		obj.ballroom = input_.ballroom
+		arr.dot = input_.dots
+		arr.vertex = []
+		color.background = Color.gray
+		
+		for dot in arr.dot:
+			arr.vertex.append(dot.vec.position)
+			vec.center += dot.vec.position
+		
+		vec.center /= arr.vertex.size()
+		
+		var input = {}
+		input.grid = vec.grid
+		input.l = arr.dot.front().num.l
+		input.position = vec.center
+		
+		if !obj.ballroom.dict.position.keys().has(input.position):
+			input.ballroom = obj.ballroom
+			input.ns = arr.n
+			var dot = Classes_0.Dot.new(input)
+			obj.ballroom.dict.dot[arr.n.front()][arr.dot.front().vec.grid.y].append(dot)
+		else:
+			obj.ballroom.dict.dot[arr.n.front()][arr.dot.front().vec.grid.y].append(obj.ballroom.dict.position[input.position])
+			obj.ballroom.dict.position[input.position].arr.n.append(arr.n.front())
+
 class Ballroom:
 	var num = {}
 	var arr = {}
@@ -38,7 +119,7 @@ class Ballroom:
 					if !dict.position.keys().has(input.position):
 						input.ballroom = self
 						input.ns = [n]
-						var dot = Classes_1.Dot.new(input)
+						var dot = Classes_0.Dot.new(input)
 						dict.dot[n][_i].append(dot)
 					else:
 						dict.dot[n][_i].append(dict.position[input.position])
@@ -69,7 +150,7 @@ class Ballroom:
 					if input.dots.size() == Global.arr.square.size():
 						input.ns = [-n-1]
 						input.ballroom = self
-						var square = Classes_1.Square.new(input)
+						var square = Classes_0.Square.new(input)
 						dict.square[n][_i].append(square)
 				
 				if dict.square[n][_i].size() == 0:

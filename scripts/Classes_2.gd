@@ -114,16 +114,6 @@ class Pas:
 		else:
 			return []
 
-	func aim():
-		
-		if  obj.card.obj.dancer.obj.troupe.word.team == "champion":
-			print("aim begin")
-		var goal = obj.card.obj.exam.obj.examinee.get_goal()
-		Global.obj.ballroom.find_nearest_dot(goal)
-		obj.dot = Global.current.dot
-		obj.card.obj.exam.obj.zone.set_position()
-		Global.current.dancer.get_angle_by_target(obj.dot)
-
 class Examinee:
 	var dict = {}
 	var obj = {}
@@ -306,6 +296,29 @@ class Exam:
 				"penalty":
 					obj.penalty = Classes_2.Penalty.new(input)
 
+	func check_content(data_):
+		var check = true
+		
+		match data_.phase:
+			"hitch":
+				check = obj.challenge.num.hitch != 0
+			"place processing":
+				if obj.exam.obj.challenge.flag.convergence:
+					match data_.content:
+						"rotate":
+							check = false
+						"move":
+							check = false
+			"target processing":
+				if obj.exam.obj.challenge.flag.convergence:
+					match data_.content:
+						"rotate":
+							check = false
+			"rest":
+				check = obj.challenge.num.rest != 0
+		
+		return check
+
 	func end():
 		obj.ballroom.arr.exam.erase(self)
 
@@ -326,71 +339,26 @@ class Card:
 			obj.pas.obj.card = self
 
 	func preuse():
-		var delay = 0
-		var contents = []
-		contents.append_array(Global.dict.effect.content)
+		for phase in Global.dict.effect.phase.keys():
+			for content in Global.dict.effect.phase[phase]:
+				var data = {}
+				data.phase = phase
+				data.content = content
+				print(data)
+				
+				if obj.exam.check_content(data):
+					data.dancer = obj.dancer
+					data.cord = "standart"
+					obj.dancer.obj.etude.add_act(data)
 		
-		if !obj.exam.obj.challenge.flag.convergence:
-			var index_f = contents.find("rotate")
-			contents.pop_at(index_f)
-			contents.erase("move")
-		if !obj.exam.obj.challenge.flag.aim:
-			var index_f = contents.find_last("rotate")
-			contents.pop_at(index_f)
-			#contents.erase("aim")
-		if obj.exam.obj.challenge.num.hitch == 0:
-			contents.erase("hitch")
-		if obj.exam.obj.challenge.num.rest == 0:
-			contents.erase("rest")
-		
-		for content in contents:
-			var input = {}
-			input.value = null
-			input.content = content
-			input.subject = obj.dancer
-			input.object = obj.dancer
-			input.cast = "splash"
-			var data = {}
-			data.time = 0
-			
-			if content != "exam" && content != "preparation":
-				input.value = obj.dancer.obj.feature.dict[content].current
-			
-			match content:
-				"hitch":
-					data.time = obj.exam.obj.challenge.num.hitch
-				"rotate":
-					if obj.pas.obj.dot != obj.dancer.obj.dot:
-						obj.dancer.get_angle_by_target(obj.pas.obj.dot)
-						
-						if obj.dancer.num.angle.current != obj.dancer.num.angle.target:
-							input.cast = "stream"
-							data.time = obj.dancer.get_time_for_rotate()
-				"move":
-					if obj.pas.obj.dot != obj.dancer.obj.dot:
-						input.cast = "stream"
-						data.time = obj.dancer.get_time_for_move(obj.pas.obj.dot.vec.position)
-				"preparation":
-					input.cast = "stream"
-					data.time = obj.exam.obj.challenge.num.preparation.max
-				"rest":
-					data.time = obj.exam.obj.challenge.num.rest
-			
-			data.dancer = obj.dancer
-			data.card = self
-			data.effect = Classes_3.Effect.new(input)
-			data.delay = delay
-			data.cord = "standart"
-			Global.obj.timeflow.add_pause(data)
-			delay += data.time
-			
+		Global.obj.timeflow.add_temp(obj.dancer)
 		var ends = []
 		ends.append_array(Global.obj.ballroom.arr.end)
 		Global.obj.ballroom.arr.end = []
 		
 		for end in ends:
 			end.update_color()
-			
+		
 		Global.current.dot = null
 
 	func check_access():

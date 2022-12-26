@@ -7,155 +7,143 @@ class Effect:
 	var obj = {}
 
 	func _init(input_):
-		num.value = {}
-		num.value.max = input_.value
-		num.value.current = input_.value
-		word.cast = input_.cast
-		word.content = input_.content
-		obj.subject = input_.subject
-		obj.object = input_.object
-
-	func update_value():
-		match word.content:
-			"rotate":
-				num.value.current = Global.obj.timeflow.num.delta*num.value.max
-				#rint("!",num.value.max)
-			"move":
-				num.value.current = Global.obj.timeflow.num.delta*num.value.max
-				
-				if obj.object.obj.dot != null:
-					obj.object.obj.dot.obj.dancer = null
-					obj.object.obj.dot = null
-			"preparation":
-				update_max(null)
-				num.value.current = Global.obj.timeflow.num.delta*num.value.max
-
-	func apply():
-		update_value()
-		
-#		dict.effect.cast = ["stream","splash"]
-#		dict.effect.content = ["rotate","move","damage","heal","instigate","buff","debuff"]
-		match word.content:
-			"rotate":
-				var angle = obj.object.num.angle.target-obj.object.num.angle.current
-				var step = float(min(num.value.current,abs(angle)))*sign(angle)
-				#rint("@", word.content, angle, " ", step)
-				obj.object.rotate_by(step)
-			"move":
-				var d = obj.object.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
-				var step = float(min(num.value.current,d))
-				#int("@", word.content, " ", d, " ", step)
-				obj.object.move_by(step)
-			"aim":
-				if obj.act.obj.dancer.obj.troupe.word.team == "champion":
-					print("#",obj.act.obj.card.obj.pas.obj.dot)
-				obj.act.obj.card.obj.pas.aim()
-				if obj.act.obj.dancer.obj.troupe.word.team == "champion":
-					print("##",obj.act.obj.card.obj.pas.obj.dot)
-					print("#####",obj.act.obj.dancer.num.angle.target)
-				update_max(obj.act.obj.dancer.num.angle.target)
-			"preparation":
-				var zone = obj.act.obj.card.obj.exam.obj.zone
-				var d = zone.vec.scale.max.x-zone.vec.scale.current.x
-				var step = float(min(num.value.current,d))
-				zone.rise_scale(step)
-			"exam":
-				obj.act.obj.card.obj.exam.obj.challenge.check_examinees()
-			"rest":
-				Global.current.dancer = obj.subject
-				Global.obj.easel.next_action()
-
-	func update_max(value_):
-		num.value.max = value_
-		
-		match word.content:
-			"rotate":
-				var data = {}
-				data.old = obj.act.num.end
-				obj.act.num.time = obj.dancer.get_time_for_rotate()
-				obj.act.num.end = obj.act.num.begin+obj.act.num.time
-				data.new = obj.act.num.end
-				data.dancer = obj.act.obj.dancer
-				obj.act.obj.cord.update_pauses(data)
-			"preparation":
-				num.value.max = obj.act.obj.card.obj.exam.obj.zone.vec.scale.max.x/obj.act.num.time
+		pass
 
 class Act:
 	var num = {}
+	var word = {}
 	var vec = {}
+	var arr = {}
 	var obj = {}
 	var color = {}
 	var scene = {}
 	var flag = {}
 
 	func _init(input_):
-		obj.cord = input_.cord
+		word.cord = input_.cord
+		word.phase = input_.phase
+		word.content = input_.content
 		obj.dancer = input_.dancer
-		obj.effect = input_.effect
-		obj.effect.obj.act = self
-		obj.effect.num.time = input_.time
-		obj.timeflow = input_.timeflow
-		obj.card = input_.card
-		num.begin = input_.begin
-		num.end = input_.end
-		num.time = input_.time
-		vec.position = input_.position
-		vec.bias = input_.position
-		num.r = Global.num.ballroom.a/4
-		color.current = Color.white
-		flag.temp = true
-		init_scenes()
+		obj.etude = obj.dancer.obj.etude
+		num.step = {}
+		num.step.current = 0
+		set_max()
+		num.time = {}
+		num.time.current = 0
+		num.time.max = 0
+		num.time.begin = 0
+		num.time.end = 0
+		#init_scenes()
+		set_stages()
+
+	func set_max():
+		if obj.dancer.obj.feature.dict.keys().has(word.content):
+			num.step.max = obj.dancer.obj.feature.dict[word.content].current
+		else:
+			if obj.dancer.obj.feature.dict.keys().has(word.phase):
+				num.step.max = obj.dancer.obj.feature.dict[word.phase].current
 
 	func init_scenes():
 		scene.act = Global.scene.act.instance()
 		Global.node.Acts.add_child(scene.act)
 		scene.act.position = vec.position
 		scene.act.set_sprites(self)
-		
-		if !obj.timeflow.flag.narrow:
-			scene.act.switch_narrow()
-		
-		if obj.effect.word.content == "exam":
-			scene.act.effect_reposition()
 
-	func shift(vec_):
-		vec.position.x += vec_.x
-		vec.bias.x += vec_.x
-		
-		if vec.position.x <= obj.timeflow.num.begin:
-			vec.position.x = obj.timeflow.num.begin
-		
-		if obj.timeflow.flag.narrow:
-			scene.act.position = vec.position
-		else:
-			scene.act.position = vec.bias
+	func set_stages():
+		num.stage = {}
+		num.stage.current = 0
+		arr.stage = []
+		arr.stage.append_array(Global.dict.effect.stage[word.content])
+		num.stage.max = arr.stage.size()
 
-	func die():
-		if !flag.temp:
-			if obj.effect.word.cast == "splash":
-				obj.effect.apply()
-			
-			match obj.effect.word.content:
-				"move":
-					obj.dancer.vec.position = obj.card.obj.pas.obj.dot.vec.position
-					obj.dancer.set_dot()
-				"preparetion":
-					obj.card.obj.exam.obj.zone.scene.vec.scale.current = Vector2()
+	func calc_time():
+		match word.content:
+			"rotate":
+				num.time = obj.dancer.get_time_for_rotate()
+
+	func perform_stage():
+		update_value()
 		
-		obj.cord.dict.pause[num.end].erase(self)
+		match Global.dict.effect.stage[num.stage.current]:
+			"prelude":
+				prelude()
+			"rise":
+				rise()
+			"finale":
+				finale()
+
+	func prelude():
+		match word.content:
+			"wait":
+				match word.phase:
+					"hitch":
+						num.time.begin = Global.timeflow.num.time.current
+			"find dot":
+				match word.phase:
+					"target processing":
+						obj.dancer.set_pas_target_dot()
+			"move":
+				obj.dancer.obj.dot.obj.dancer = null
+				obj.dancer.obj.dot = null
+				obj.dancer.obj.etude.obj.pas.obj.dot.obj.dancer = obj.dancer
+			"preparation":
+				pass
 		
-		if scene.act != null:
-			scene.act.queue_free()
-			scene.act = null
+		next_stage()
+
+	func rise():
+		match word.content:
+			"rotate":
+				var angle = obj.dancer.num.angle.target-obj.dancer.num.angle.current
+				var step = float(min(num.step.current,abs(angle)))*sign(angle)
+				obj.dancer.rotate_by(step)
+			"move":
+				var d = obj.dancer.vec.position.distance_to(obj.act.obj.card.obj.pas.obj.dot.vec.position)
+				var step = float(min(num.step.current,d))
+				obj.dancer.move_by(step)
+			"preparation":
+				var zone = obj.etude.obj.exam.obj.zone
+				var d = zone.vec.scale.max.x-zone.vec.scale.current.x
+				var step = float(min(num.step.current,d))
+				zone.rise_scale(step)
+			"wait":
+				pass
 		
-		for _i in range(Global.obj.timeflow.arr.timeline.size()-1,-1,-1):
-			if Global.obj.timeflow.arr.timeline[_i].act == self:
-				Global.obj.timeflow.arr.timeline.pop_at(_i)
+		check_time()
+
+	func finale():
+		match word.content:
+			"move":
+				obj.dancer.obj.dot = obj.dancer.obj.etude.obj.pas.obj.dot
+			"preparation":
+				obj.exam.obj.challenge.check_examinees()
 		
-		obj.cord.reposition()
+		next_stage()
+
+	func next_stage():
+		num.stage.current += 1 
 		
-		if Global.obj.timeflow.arr.timeline.size() == 0:
-			Global.obj.timeflow.flag.stop = true
+		if num.stage.current >= num.stage.max:
+			end()
+
+	func check_time():
+		num.time.current += Global.obj.timeflow.num.delta
+		
+		if num.time.current >= num.time.max:
+			next_stage()
+
+	func update_max(value_):
+		num.step.max = value_
+		
+		match word.content:
+			"preparation":
+				num.step.max = obj.etude.obj.exam.obj.zone.vec.scale.max.x/obj.act.num.time
+
+	func update_value():
+		num.step.current = Global.obj.timeflow.num.delta*num.step.max
+
+	func end():
+		obj.etude.arr.act.pop_front()
 
 class Cord:
 	var word = {}
@@ -170,10 +158,10 @@ class Cord:
 		obj.timeflow = input_.timeflow
 		color.background = Global.color.cord[word.name]
 		arr.vertex = input_.vertexs
+		arr.etude = []
+		obj.temp = null
 		num.weight = Global.num.dent.weight
 		color.line = Color.black
-		dict.pause = {}
-		
 		set_vertexs()
 
 	func set_vertexs():
@@ -186,97 +174,17 @@ class Cord:
 		
 		num.y = (arr.vertex.front().y+arr.vertex.back().y)/2
 
-	func add_act(data_):
-		if !dict.pause.keys().has(data_.end):
-			dict.pause[data_.end] = []
-		
-		var end = data_.end-obj.timeflow.num.time.current
-		var x = obj.timeflow.num.begin+end*Global.num.dent.x
-		data_.position = Vector2(x,num.y)
-		data_.cord = self
-		data_.timeflow = obj.timeflow
-		var act = Classes_3.Act.new(data_)
-		dict.pause[data_.end].append(act)
+	func fix_temp():
+		arr.etude.append(obj.temp)
 		var data = {}
-		data.value = data_.end
-		data.act = act
+		data.value = obj.timeflow.num.time.current + obj.temp.arr.act.front().num.time.max
+		data.etude = obj.temp 
 		obj.timeflow.arr.timeline.append(data)
-		reposition()
+		obj.temp = null
 
-	func switch_narrow():
-		for pause in dict.pause.keys():
-			for act in dict.pause[pause]:
-				act.scene.act.switch_narrow()
-
-	func reposition():
-		update_bias()
-		
-		for pause in dict.pause.keys():
-			for act in dict.pause[pause]:
-				if obj.timeflow.flag.narrow:
-					act.scene.act.position = act.vec.position
-				else:
-					act.scene.act.position = act.vec.bias
-
-	func update_bias():
-		var datas = []
-		var x = Global.vec.sprite.size.x
-		
-		for pause in dict.pause.keys():
-			for act in dict.pause[pause]:
-				var data = {}
-				data.act = act
-				data.x = act.vec.position.x
-				data.bias = 2*x
-				data.value = data.x
-				
-				if data.act.obj.effect.word.content == "exam":
-					data.bias += x
-				
-				datas.append(data)
-		
-		datas.sort_custom(Classes_0.Sorter, "sort_ascending")
-		
-		for _i in range(1,datas.size(),1):
-			var _j = _i-1
-			
-			if datas[_i].x-datas[_j].x < datas[_i].bias:
-				datas[_i].x = datas[_j].x+datas[_j].bias
-			
-		for data in datas:
-			data.act.vec.bias = Vector2(data.x,data.act.vec.position.y)
-
-	func update_pauses(data_):
-		var shift = data_.new-data_.old
-		var acts = []
-		
-		for time in dict.pause.keys():
-			for act in dict.pause[time]:
-				if act.obj.dacner == data_.dacner && act.num.begin >= data_.old:
-					acts.append(act)
-					dict.pause[time].erase(act)
-					var data = {}
-					data.value = act.num.end
-					data.act = act
-					obj.timeflow.arr.timeline.erase(data)
-		
-		for act in acts:
-			act.num.begin += shift
-			act.num.end += shift
-			var data = {}
-			data.value = act.num.end
-			data.act = act
-			obj.timeflow.arr.timeline.append(data)
-			
-			if !dict.pause.keys().has(act.num.end):
-				dict.pause[act.num.end] = []
-			
-			dict.pause[act.num.end].append(act)
-		
-		update_positions()
-		
-	func update_positions():
-		pass
+	func perform():
+		for etude in arr.etude:
+			etude.perform()
 
 class Dent:
 	var num = {}
@@ -364,69 +272,43 @@ class Timeflow:
 				dent.shift(shift)
 			
 			for timeline in arr.timeline:
+				timeline.act.obj.effect.apply()
 				timeline.act.shift(shift)
-			
-			for timeline in arr.timeline:
-				if timeline.act.obj.effect.word.cast == "stream" && timeline.act.num.begin <= num.time.current:
-					timeline.act.obj.effect.apply()
-			
-			if time == num.time.current:
-				for timeline in arr.timeline:
-					if timeline.value == time:
-						timeline.act.die()
 		else:
 			Global.flag.timeline = false
 
 	func get_closest_act():
 		arr.timeline.sort_custom(Classes_0.Sorter, "sort_ascending")
-		var act = arr.timeline.front()
-		return act
-
-	func add_pause(data_):
-		data_.begin = num.time.current+data_.delay
-		data_.end = num.time.current+data_.time+data_.delay
-		dict.cord[data_.cord].add_act(data_)
+		var etude = arr.timeline.front()
+		return etude
 
 	func shift_act_sprites():
 		flag.narrow = !flag.narrow
 		
-		for kye in dict.cord.keys():
-			var cord = dict.cord[kye]
+		for cord in dict.cord.keys():
 			cord.switch_narrow()
 			cord.reposition()
-
-	func clean_temp():
-		for _i in range(arr.timeline.size()-1,-1,-1):
-			var act = arr.timeline[_i].act
-			
-			if act.flag.temp:
-				act.die()
-
-	func fix_temp():
-		Global.obj.easel.clean_hand()
-		
-		for timeline in arr.timeline:
-			if timeline.act.flag.temp:
-				timeline.act.flag.temp = false
 
 	func launch_mobs():
 		for team in Global.obj.ballroom.dict.troupe.keys():
 			for dancer in Global.obj.ballroom.dict.troupe[team].arr.dancer:
-				var input = {}
-				input.value = null
-				input.cast = "splash"
-				input.content = "rest"
-				input.subject = dancer
-				input.object = dancer
-				
 				var data = {}
-				data.dancer = dancer
-				data.card = null
-				data.effect = Classes_3.Effect.new(input)
-				data.time = dancer.obj.feature.dict["rest"].current
-				data.delay = 0
+				data.phase = "rest"
+				data.content = "wait"
 				data.cord = "standart"
-				add_pause(data)
+				data.dancer = dancer
+				dancer.obj.etude.add_act(data)
+				add_temp(dancer)
 		
 		fix_temp()
+
+	func add_temp(dancer_):
+		var cord = dancer_.obj.etude.arr.act.front().word.cord
+		dancer_.obj.etude.calc_total_time()
+		dict.cord[cord].obj.temp = dancer_.obj.etude
+
+	func fix_temp():
+		for key in dict.cord.keys():
+			if dict.cord[key].obj.temp != null:
+				dict.cord[key].fix_temp()
 

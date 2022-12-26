@@ -101,8 +101,19 @@ func init_dict():
 	}
 	
 	dict.effect = {}
-	dict.effect.cast = ["stream","splash"]
-	dict.effect.content = ["hitch","rotate","move","aim","rotate","preparation","exam","rest"]
+	dict.effect.stage = {
+		"wait": ["prelude","rise","finale"],
+		"find dot": ["prelude"],
+		"rotate": ["rise"],
+		"move": ["prelude","rise","finale"],
+		"preparation": ["prelude","rise","finale"]
+	}
+	dict.effect.phase = {
+		"hitch": ["wait"],
+		"place processing": ["find dot","rotate","move"],
+		"target processing": ["find dot","rotate","preparation",],
+		"rest": ["wait"],
+	}
 	dict.effect.exam = ["damage","heal","instigate","buff","debuff","summon"]
 	
 	dict.feature = {}
@@ -117,7 +128,8 @@ func init_dict():
 			"rest": 1,
 			"aim": 0,
 			"pas draw": 4,
-			"exam draw": 4
+			"exam draw": 4,
+			"preparation": 1
 		},
 		"mob": {
 			"health": 1000,
@@ -127,7 +139,8 @@ func init_dict():
 			"rest": 0,#2
 			"aim": 0,
 			"pas draw": 1,
-			"exam draw": 1
+			"exam draw": 1,
+			"preparation": 1
 		}
 	}
 	
