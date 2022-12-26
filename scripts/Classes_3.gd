@@ -1,14 +1,6 @@
 extends Node
 
 
-class Effect:
-	var num = {}
-	var word = {}
-	var obj = {}
-
-	func _init(input_):
-		pass
-
 class Act:
 	var num = {}
 	var word = {}
@@ -16,7 +8,6 @@ class Act:
 	var arr = {}
 	var obj = {}
 	var color = {}
-	var scene = {}
 	var flag = {}
 
 	func _init(input_):
@@ -42,12 +33,6 @@ class Act:
 		else:
 			if obj.dancer.obj.feature.dict.keys().has(word.phase):
 				num.step.max = obj.dancer.obj.feature.dict[word.phase].current
-
-	func init_scenes():
-		scene.act = Global.scene.act.instance()
-		Global.node.Acts.add_child(scene.act)
-		scene.act.position = vec.position
-		scene.act.set_sprites(self)
 
 	func set_stages():
 		num.stage = {}
@@ -272,8 +257,8 @@ class Timeflow:
 				dent.shift(shift)
 			
 			for timeline in arr.timeline:
-				timeline.act.obj.effect.apply()
-				timeline.act.shift(shift)
+				timeline.etude.perform()
+				timeline.etude.shift(shift)
 		else:
 			Global.flag.timeline = false
 

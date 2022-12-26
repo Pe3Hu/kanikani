@@ -126,12 +126,19 @@ class Etude:
 	var word = {}
 	var arr = {}
 	var obj = {}
+	var scene = {}
 	var dict = {}
 
 	func _init(input_):
 		obj.dancer = input_.dancer
 		arr.act = []
+		init_scenes()
 		reset()
+
+	func init_scenes():
+		scene.act = Global.scene.act.instance()
+		Global.node.Acts.add_child(scene.act)
+		scene.act.set_sprites(self)
 
 	func reset():
 		num.time = 0
